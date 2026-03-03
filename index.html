@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="es"
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>TaskFlow - Gestion de Tareas</title>
+    <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+    <!--HEADER-->
+    <header>
+    <div class="header__logo">
+      <div class="header__dot"></div>
+      Task<span>Flow</span>
+    </div>
+  </header>
+
+  <!--LAYOUT: ASIDE + MAIN-->
+  <div class="layout">
+
+    <!--ASIDE - BARRA LATERAL-->
+
+    <aside>
+         <div>
+        <p class="sidebar__title">Vistas</p>
+        <nav class="sidebar__nav">
+          <div class="nav-item active">
+            <span class="nav-item__icon">⊞</span>
+            Todas las tareas
+            <span class="nav-item__count">12</span>
+          </div>
+          <div class="nav-item">
+            <span class="nav-item__icon">◈</span>
+            En progreso
+            <span class="nav-item__count">5</span>
+          </div>
+          <div class="nav-item">
+            <span class="nav-item__icon">✓</span>
+            Completadas
+            <span class="nav-item__count">4</span>
+          </div>
+          <div class="nav-item">
+            <span class="nav-item__icon">⚑</span>
+            Alta prioridad
+            <span class="nav-item__count">3</span>
+          </div>
+        </nav>
+      </div>
+
+      <div>
+        <p class="sidebar__title">Categorías</p>
+        <nav class="sidebar__nav">
+          <div class="nav-item">
+            <span class="nav-item__icon">💻</span>
+            Desarrollo
+            <span class="nav-item__count">6</span>
+          </div>
+          <div class="nav-item">
+            <span class="nav-item__icon">🏃‍➡️</span>
+            Deporte
+            <span class="nav-item__count">3</span>
+          </div>
+          <div class="nav-item">
+            <span class="nav-item__icon">📋</span>
+            Gestión
+            <span class="nav-item__count">2</span>
+          </div>
+          <div class="nav-item">
+            <span class="nav-item__icon">📚</span>
+            Investigación
+            <span class="nav-item__count">1</span>
+            
+          </div>
+        </nav>
+      </div>
+
+      <div class="sidebar__stats">
+        <p class="sidebar__title">Progreso semanal</p>
+        <div class="stat-item">
+          <span class="stat-item__label">Completadas</span>
+          <span class="stat-item__value" style="color: var(--color-done)">4 / 12</span>
+        </div>
+        <div class="progress-bar">
+          <div class="progress-bar__fill" style="width: 33%"></div>
+        </div>
+        <div class="stat-item" style="margin-top: var(--space-xs)">
+          <span class="stat-item__label">Alta prioridad</span>
+          <span class="stat-item__value" style="color: var(--color-danger)">3</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-item__label">Vencen hoy</span>
+          <span class="stat-item__value" style="color: var(--color-warning)">2</span>
+        </div>
+      </div>
+    </aside>
+
+    <!--MAIN -- CONTENIDO-->
+
+    <main>
+
+        <!--EN PROGRESO-->
+
+        <section>
+            <div class="section__header">
+          <h2 class="section__title">
+            ◈ En progreso
+            <span class="section__count">5 tareas</span>
+          </h2>
+          <button class="section__add">+ Nueva tarea</button>
+        </div>
+
+        <div class="task-list">
+
+          <div class="task-card" onclick="toggleDone(this)">
+            <div class="task-card__check"></div>
+            <div class="task-card__body">
+              <div class="task-card__top">
+                <span class="task-card__title">Hacer pedido suplementos</span>
+              </div>
+              <div class="task-card__bottom">
+                <span class="badge-category">📋 Gestion</span>
+                <span class="badge-priority alta">Alta</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="task-card" onclick="toggleDone(this)">
+            <div class="task-card__check"></div>
+            <div class="task-card__body">
+              <div class="task-card__top">
+                <span class="task-card__title">Proyecto sistema Log In</span>
+              </div>
+              <div class="task-card__bottom">
+                <span class="badge-category">💻 Desarrollo</span>
+                <span class="badge-priority media">Media</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="task-card" onclick="toggleDone(this)">
+            <div class="task-card__check"></div>
+            <div class="task-card__body">
+              <div class="task-card__top">
+                <span class="task-card__title">Revisar codigo proyecto TFG</span>
+              </div>
+              <div class="task-card__bottom">
+                <span class="badge-category">💻 Desarrollo</span>
+                <span class="badge-priority media">Media</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="task-card" onclick="toggleDone(this)">
+            <div class="task-card__check"></div>
+            <div class="task-card__body">
+              <div class="task-card__top">
+                <span class="task-card__title">Preparar End Points para bases de datos</span>
+              </div>
+              <div class="task-card__bottom">
+                <span class="badge-category">💻 Desarrollo</span>
+                <span class="badge-priority alta">Alta</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="task-card" onclick="toggleDone(this)">
+            <div class="task-card__check"></div>
+            <div class="task-card__body">
+              <div class="task-card__top">
+                <span class="task-card__title">Investigar alternativas para Redux</span>
+              </div>
+              <div class="task-card__bottom">
+                <span class="badge-category">📚 Investigación</span>
+                <span class="badge-priority baja">Baja</span>
+              </div>
+            </div>
+          </div>
+
+        </div>
+        </section>
+
+        <!--PEENDIENTES-->
+
+        <section>
+             <div class="section__header">
+          <h2 class="section__title">
+            ○ Pendientes
+            <span class="section__count">3 tareas</span>
+          </h2>
+          <button class="section__add">+ Nueva tarea</button>
+        </div>
+
+        <div class="task-list">
+
+          <div class="task-card" onclick="toggleDone(this)">
+            <div class="task-card__check"></div>
+            <div class="task-card__body">
+              <div class="task-card__top">
+                <span class="task-card__title">Entrenar gimnasio</span>
+              </div>
+              <div class="task-card__bottom">
+                <span class="badge-category">🏃‍➡️ Deporte</span>
+                <span class="badge-priority alta">Alta</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="task-card" onclick="toggleDone(this)">
+            <div class="task-card__check"></div>
+            <div class="task-card__body">
+              <div class="task-card__top">
+                <span class="task-card__title">Leer</span>
+              </div>
+              <div class="task-card__bottom">
+                <span class="badge-category">📚 Investigacion</span>
+                <span class="badge-priority baja">Baja</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="task-card" onclick="toggleDone(this)">
+            <div class="task-card__check"></div>
+            <div class="task-card__body">
+              <div class="task-card__top">
+                <span class="task-card__title">Preparar documentación del TFG</span>
+              </div>
+              <div class="task-card__bottom">
+                <span class="badge-category">📋 Gestión</span>
+                <span class="badge-priority media">Media</span>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+        <!--COMPLETADAS-->
+
+         <section>
+        <div class="section__header">
+          <h2 class="section__title">
+            ✓ Completadas
+            <span class="section__count">4 tareas</span>
+          </h2>
+        </div>
+
+        <div class="task-list">
+
+          <div class="task-card done" onclick="toggleDone(this)">
+            <div class="task-card__check">✓</div>
+            <div class="task-card__body">
+              <div class="task-card__top">
+                <span class="task-card__title">Configurar GitHub</span>
+              </div>
+              <div class="task-card__bottom">
+                <span class="badge-category">💻 Desarrollo</span>
+                <span class="badge-priority media">Media</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="task-card done" onclick="toggleDone(this)">
+            <div class="task-card__check">✓</div>
+            <div class="task-card__body">
+              <div class="task-card__top">
+                <span class="task-card__title">Correr</span>
+              </div>
+              <div class="task-card__bottom">
+                <span class="badge-category">🏃‍➡️ Deporte</span>
+                <span class="badge-priority baja">Baja</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="task-card done" onclick="toggleDone(this)">
+            <div class="task-card__check">✓</div>
+            <div class="task-card__body">
+              <div class="task-card__top">
+                <span class="task-card__title">Crear App gestor de tareas</span>
+              </div>
+              <div class="task-card__bottom">
+                <span class="badge-category">💻 Desarrollo</span>
+                <span class="badge-priority alta">Alta</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="task-card done" onclick="toggleDone(this)">
+            <div class="task-card__check">✓</div>
+            <div class="task-card__body">
+              <div class="task-card__top">
+                <span class="task-card__title">Reunión equipo TFG</span>
+              </div>
+              <div class="task-card__bottom">
+                <span class="badge-category">📋 Gestión</span>
+                <span class="badge-priority media">Media</span>
+        </section>
+    </main>
+
+  </div>
+
+  <!--ESTADO DE TRANSICION SUAVE-->
+
+  <script>
+    function toggleDone(card) {
+      card.classList.toggle('done');
+      const check = card.querySelector('.task-card__check');
+      if (card.classList.contains('done')) {
+        check.textContent = '✓';
+      } else {
+        check.textContent = '';
+      }
+    }
+  </script>
+</body>
+</html>

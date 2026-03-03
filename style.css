@@ -266,7 +266,7 @@ section {
 
 /* TASK LIST CON FLEXBOX */
 
-task-list {
+.task-list {
   display: flex;
   flex-direction: column;
   gap: var(--space-sm);

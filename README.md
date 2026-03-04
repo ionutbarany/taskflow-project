@@ -32,7 +32,7 @@ Cómo ejecutarlo
 
 Clona el repositorio
 
-git clone https://github.com/tu-usuario/taskflow.git
+git clone https://github.com/ionutbarany/taskflow.git
 
 Abre index.html en tu navegador
 

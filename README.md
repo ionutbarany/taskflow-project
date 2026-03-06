@@ -65,7 +65,7 @@ taskflow/
 
 ```bash
 # 1. Clona el repositorio
-git clone https://github.com/tu-usuario/taskflow.git
+git clone https://github.com/ionutbarany/taskflow.git
 
 # 2. Abre el archivo en tu navegador
 open index.html

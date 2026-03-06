@@ -1,507 +1,25 @@
-/* VARIABLES CSS EN :ROOT*/
+/* ============================================================
+   TASKFLOW — style.css
+   Versión reducida tras integrar Tailwind.
+   Solo contiene lo que Tailwind no puede hacer directamente:
+   - Animaciones con @keyframes
+   - Estados complejos activados por JavaScript (.done, hover con transform)
+   - Badges de prioridad (estilos con transparencias complejas)
+   ============================================================ */
 
-:root{
-    --color-bg:          #0d0f14;
-  --color-surface:     #161920;
-  --color-surface-2:   #1e2230;
-  --color-border:      #272c3a;
-  --color-accent:      #5b8def;
-  --color-accent-glow: rgba(91, 141, 239, 0.18);
-  --color-text:        #e8eaf0;
-  --color-text-muted:  #6b7280;
-  --color-success:     #34d399;
-  --color-warning:     #fbbf24;
-  --color-danger:      #f87171;
-  --color-done:        #a3e635;
+/* ── FUENTES ── */
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500&family=Syne:wght@400;600;800&display=swap');
 
-  --font-display: 'Syne', sans-serif;
-  --font-body:    'DM Sans', sans-serif;
+/* ── ANIMACIONES ─────────────────────────────────────────── */
 
-  --space-xs:  4px;
-  --space-sm:  8px;
-  --space-md:  16px;
-  --space-lg:  24px;
-  --space-xl:  40px;
-  --space-2xl: 64px;
-
-  --radius-sm: 8px;
-  --radius-md: 14px;
-  --radius-lg: 20px;
-
-  --sidebar-width: 260px;
-  --transition-speed: 0.32s;
-}
-
-/* RESET Y REBASE */
-
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-body {
-  font-family: var(--font-body);
-  background-color: var(--color-bg);
-  color: var(--color-text);
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-}
-
-/* HEADER */
-
-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: var(--space-md) var(--space-xl);
-  background: var(--color-surface);
-  border-bottom: 1px solid var(--color-border);
-  position: sticky;
-  top: 0;
-  z-index: 100;
-  backdrop-filter: blur(12px);
-}
-
-.header__logo {
-  font-family: var(--font-display);
-  font-size: 1.4rem;
-  font-weight: 800;
-  letter-spacing: -0.03em;
-  color: var(--color-text);
-  display: flex;
-  align-items: center;
-  gap: var(--space-sm);
-}
-
-.header__logo span {
-  color: var(--color-accent);
-}
-
-.header__dot {
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  background: var(--color-accent);
-  box-shadow: 0 0 10px var(--color-accent);
-  animation: pulse 2s ease-in-out infinite;
-}
-
-@keyframes pulse {
+@keyframes pulse-dot {
   0%, 100% { opacity: 1; transform: scale(1); }
   50%       { opacity: 0.5; transform: scale(0.8); }
 }
 
-.header__meta {
-  font-size: 0.8rem;
-  color: var(--color-text-muted);
-  font-weight: 300;
-  flex-shrink: 0;
-}
-
-/*BUSCADOR HEADER*/
-
-.header__search {
-  flex: 1;
-  max-width: 320px;
-  position: relative;
-}
-
-.header__search-icon {
-  position: absolute;
-  left: 12px;
-  top: 50%;
-  transform: translateY(-50%);
-  color: var(--color-text-muted);
-  font-size: 1.1rem;
-  pointer-events: none;
-}
-
-.header__search-input {
-  width: 100%;
-  background: var(--color-surface-2);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-sm);
-  padding: 8px 14px 8px 36px;
-  color: var(--color-text);
-  font-family: var(--font-body);
-  font-size: 0.85rem;
-  outline: none;
-  transition: border-color var(--transition-speed);
-}
-
-.header__search-input:focus {
-  border-color: var(--color-accent);
-}
-
-.header__search-input::placeholder {
-  color: var(--color-text-muted);
-}
-
-/* LAYOUT PRINCIPAL (MAIN + ASIDE)*/
-
-.layout {
-  display: flex;
-  flex: 1;
-}
-
-/* ASIDE - BARRA LATERAL*/
-
-aside {
-  width: var(--sidebar-width);
-  background: var(--color-surface);
-  border-right: 1px solid var(--color-border);
-  padding: var(--space-lg) var(--space-md);
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-lg);
-  flex-shrink: 0;
-}
-
-.sidebar__title {
-  font-family: var(--font-display);
-  font-size: 0.7rem;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.12em;
-  color: var(--color-text-muted);
-  padding-bottom: var(--space-sm);
-  border-bottom: 1px solid var(--color-border);
-}
-
-.sidebar__nav {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-xs);
-}
-
-.nav-item {
-  display: flex;
-  align-items: center;
-  gap: var(--space-sm);
-  padding: var(--space-sm) var(--space-md);
-  border-radius: var(--radius-sm);
-  font-size: 0.88rem;
-  font-weight: 400;
-  color: var(--color-text-muted);
-  cursor: pointer;
-  transition: background var(--transition-speed), color var(--transition-speed);
-  border: 1px solid transparent;
-}
-
-.nav-item:hover,
-.nav-item.active {
-  background: var(--color-accent-glow);
-  color: var(--color-text);
-  border-color: var(--color-border);
-}
-
-.nav-item.active {
-  color: var(--color-accent);
-  font-weight: 500;
-}
-
-.nav-item__icon { font-size: 1rem; }
-
-.nav-item__count {
-  margin-left: auto;
-  font-size: 0.72rem;
-  background: var(--color-surface-2);
-  border: 1px solid var(--color-border);
-  border-radius: 20px;
-  padding: 1px 7px;
-  color: var(--color-text-muted);
-}
-
-/* Stats en sidebar */
-.sidebar__stats {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-sm);
-}
-
-.stat-item {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  font-size: 0.82rem;
-}
-
-.stat-item__label { color: var(--color-text-muted); }
-
-.stat-item__value {
-  font-family: var(--font-display);
-  font-weight: 700;
-  font-size: 1rem;
-}
-
-.progress-bar {
-  height: 3px;
-  background: var(--color-border);
-  border-radius: 99px;
-  overflow: hidden;
-}
-
-.progress-bar__fill {
-  height: 100%;
-  border-radius: 99px;
-  background: linear-gradient(90deg, var(--color-accent), var(--color-done));
-  transition: width 1s ease;
-}
-
-/* MAIN - CONTENIDO PRINCIPAL */
-
-main {
-  flex: 1;
-  padding: var(--space-xl);
-  overflow-y: auto;
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-xl);
-}
-
-/* SECTION - SECCIONES DE TAREAS */
-
-section {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-md);
-}
-
-.section__header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
-
-.section__title {
-  font-family: var(--font-display);
-  font-size: 1.15rem;
-  font-weight: 700;
-  letter-spacing: -0.02em;
-  display: flex;
-  align-items: center;
-  gap: var(--space-sm);
-}
-
-.section__count {
-  font-family: var(--font-body);
-  font-size: 0.78rem;
-  color: var(--color-text-muted);
-  font-weight: 300;
-}
-
-.section__add {
-  font-size: 0.8rem;
-  color: var(--color-accent);
-  cursor: pointer;
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-sm);
-  padding: 4px 10px;
-  background: transparent;
-  transition: background var(--transition-speed), box-shadow var(--transition-speed);
-}
-
-.section__add:hover {
-  background: var(--color-accent-glow);
-  box-shadow: 0 0 12px var(--color-accent-glow);
-}
-
-/* TASK LIST CON FLEXBOX */
-
-.task-list {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-sm);
-}
-
-/* TASK CARD - CON TRANSITION */
-
-.task-card {
-  display: flex;
-  align-items: center;
-  gap: var(--space-md);
-  padding: var(--space-md) var(--space-lg);
-  background: var(--color-surface);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-md);
-  cursor: pointer;
-
-  /* BONUS: transición suave al cambiar estado */
-  transition:
-    background    var(--transition-speed) ease,
-    border-color  var(--transition-speed) ease,
-    box-shadow    var(--transition-speed) ease,
-    opacity       var(--transition-speed) ease,
-    transform     var(--transition-speed) ease;
-}
-
-.task-card:hover {
-  background: var(--color-surface-2);
-  border-color: var(--color-accent);
-  box-shadow: 0 0 0 1px var(--color-accent-glow), 0 4px 24px rgba(0,0,0,0.3);
-  transform: translateY(-2px);
-}
-
-/* Estado: completada */
-.task-card.done {
-  opacity: 0.55;
-  border-color: transparent;
-  background: var(--color-surface);
-}
-
-.task-card.done .task-card__title {
-  text-decoration: line-through;
-  color: var(--color-text-muted);
-}
-
-/* Clase para ocultar en la búsqueda */
-.task-card.hidden {
-  display: none;
-}
-
-/* Animación de entrada de cards nuevas */
 @keyframes cardEntrada {
   from { opacity: 0; transform: translateY(-8px); }
   to   { opacity: 1; transform: translateY(0); }
-}
-
-/* Checkbox */
-.task-card__check {
-  width: 20px;
-  height: 20px;
-  border-radius: 50%;
-  border: 2px solid var(--color-border);
-  flex-shrink: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 0.7rem;
-  transition: background var(--transition-speed), border-color var(--transition-speed);
-}
-
-.task-card.done .task-card__check {
-  background: var(--color-done);
-  border-color: var(--color-done);
-  color: #0d0f14;
-}
-
-/* Contenido central con FLEXBOX */
-.task-card__body {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-  min-width: 0;
-}
-
-.task-card__top {
-  display: flex;
-  align-items: center;
-  gap: var(--space-sm);
-}
-
-.task-card__title {
-  font-family: var(--font-display);
-  font-size: 0.92rem;
-  font-weight: 600;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  transition: color var(--transition-speed);
-}
-
-.task-card__bottom {
-  display: flex;
-  align-items: center;
-  gap: var(--space-sm);
-}
-
-/* Categoría */
-.badge-category {
-  font-size: 0.7rem;
-  font-weight: 500;
-  padding: 2px 8px;
-  border-radius: 20px;
-  border: 1px solid var(--color-border);
-  color: var(--color-text-muted);
-  background: var(--color-surface-2);
-  transition: color var(--transition-speed), border-color var(--transition-speed);
-}
-
-/* Badges de prioridad */
-.badge-priority {
-  font-size: 0.68rem;
-  font-weight: 700;
-  font-family: var(--font-display);
-  letter-spacing: 0.05em;
-  padding: 2px 8px;
-  border-radius: 20px;
-  text-transform: uppercase;
-  transition: box-shadow var(--transition-speed);
-}
-
-.badge-priority.alta {
-  background: rgba(248, 113, 113, 0.12);
-  color: var(--color-danger);
-  border: 1px solid rgba(248, 113, 113, 0.3);
-}
-
-.badge-priority.media {
-  background: rgba(251, 191, 36, 0.1);
-  color: var(--color-warning);
-  border: 1px solid rgba(251, 191, 36, 0.3);
-}
-
-.badge-priority.baja {
-  background: rgba(52, 211, 153, 0.1);
-  color: var(--color-success);
-  border: 1px solid rgba(52, 211, 153, 0.3);
-}
-
-.task-card:hover .badge-priority.alta   { box-shadow: 0 0 8px rgba(248, 113, 113, 0.4); }
-.task-card:hover .badge-priority.media  { box-shadow: 0 0 8px rgba(251, 191, 36, 0.4); }
-.task-card:hover .badge-priority.baja   { box-shadow: 0 0 8px rgba(52, 211, 153, 0.4); }
-
-/*BOTON DE ELIMINAR EN LA TASK-CARD*/
-
-.btn-delete {
-  background: none;
-  border: none;
-  color: var(--color-text-muted);
-  font-size: 1.2rem;
-  line-height: 1;
-  cursor: pointer;
-  padding: 2px 8px;
-  border-radius: var(--radius-sm);
-  transition: color var(--transition-speed), background var(--transition-speed);
-  /* oculto por defecto, aparece al hover de la card */
-  opacity: 0;
-  flex-shrink: 0;
-}
-
-.task-card:hover .btn-delete {
-  opacity: 1;
-}
-
-.btn-delete:hover {
-  color: var(--color-danger);
-  background: rgba(248, 113, 113, 0.1);
-}
-
-/*NUEVO MODAL*/
-
-.modal {
-  position: fixed;
-  inset: 0;                      /* cubre toda la pantalla */
-  background: rgba(0, 0, 0, 0.6);
-  backdrop-filter: blur(4px);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 200;
-  animation: fadeIn 0.2s ease;
-}
-
-.modal.hidden {
-  display: none;                 /* ocultamos con esta clase desde JS */
 }
 
 @keyframes fadeIn {
@@ -509,154 +27,119 @@ section {
   to   { opacity: 1; }
 }
 
-.modal__box {
-  background: var(--color-surface);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-lg);
-  padding: var(--space-lg) var(--space-xl);
-  width: 100%;
-  max-width: 440px;
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-md);
-  animation: slideUp 0.25s ease;
-}
-
 @keyframes slideUp {
   from { transform: translateY(20px); opacity: 0; }
   to   { transform: translateY(0);    opacity: 1; }
 }
 
-.modal__title {
-  font-family: var(--font-display);
-  font-size: 1.1rem;
-  font-weight: 700;
+/* Punto animado del logo */
+.header__dot {
+  animation: pulse-dot 2s ease-in-out infinite;
 }
 
-.modal__field {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-  flex: 1;
+/* ── TASK CARD: estados complejos ─────────────────────────── */
+
+/* Hover con transform — Tailwind no soporta translateY negativo en hover sin config */
+.task-card:hover {
+  border-color: #5b8def;
+  transform: translateY(-2px);
+  box-shadow: 0 0 0 1px rgba(91,141,239,0.18), 0 4px 24px rgba(0,0,0,0.12);
 }
 
-.modal__label {
-  font-size: 0.75rem;
-  color: var(--color-text-muted);
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
+/* En modo oscuro el fondo del hover es diferente */
+.dark .task-card:hover {
+  background-color: #1e2230;
+  box-shadow: 0 0 0 1px rgba(91,141,239,0.18), 0 4px 24px rgba(0,0,0,0.3);
 }
 
-.modal__input,
-.modal__select {
-  background: var(--color-surface-2);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-sm);
-  padding: 10px 14px;
-  color: var(--color-text);
-  font-family: var(--font-body);
-  font-size: 0.9rem;
-  outline: none;
-  transition: border-color var(--transition-speed);
-  width: 100%;
+/* El botón de eliminar aparece al hacer hover en la card */
+.task-card:hover .btn-delete {
+  opacity: 1 !important;
 }
 
-.modal__input:focus,
-.modal__select:focus {
-  border-color: var(--color-accent);
+/* Estado: tarea completada (añadido/retirado por JS) */
+.task-card.done {
+  opacity: 0.55;
+  border-color: transparent !important;
 }
 
-.modal__row {
-  display: flex;
-  gap: var(--space-md);
+.task-card.done .task-card__title {
+  text-decoration: line-through;
+  color: #6b7280;
 }
 
-.modal__actions {
-  display: flex;
-  gap: var(--space-sm);
-  justify-content: flex-end;
-  margin-top: var(--space-xs);
+.task-card.done .task-card__check {
+  background-color: #a3e635;
+  border-color: #a3e635;
+  color: #0d0f14;
 }
 
-.modal__btn {
-  font-family: var(--font-body);
-  font-size: 0.85rem;
+/* Animación de entrada de cards nuevas (aplicada por JS) */
+.task-card {
+  animation: cardEntrada 0.25s ease forwards;
+}
+
+/* ── MODAL ─────────────────────────────────────────────────── */
+
+.modal-box {
+  animation: slideUp 0.25s ease;
+}
+
+/* ── BADGES ────────────────────────────────────────────────── */
+
+.badge-category {
+  font-size: 0.7rem;
   font-weight: 500;
-  padding: 8px 20px;
-  border-radius: var(--radius-sm);
-  cursor: pointer;
-  transition: background var(--transition-speed), box-shadow var(--transition-speed);
-  border: 1px solid var(--color-border);
+  padding: 2px 8px;
+  border-radius: 20px;
+  border: 1px solid #e5e7eb;
+  color: #6b7280;
+  background: #f3f4f6;
+  white-space: nowrap;
 }
 
-.modal__btn--cancel {
-  background: transparent;
-  color: var(--color-text-muted);
+.dark .badge-category {
+  border-color: #272c3a;
+  background: #1e2230;
 }
 
-.modal__btn--cancel:hover {
-  background: var(--color-surface-2);
-  color: var(--color-text);
+.badge-priority {
+  font-size: 0.68rem;
+  font-weight: 700;
+  font-family: 'Syne', sans-serif;
+  letter-spacing: 0.05em;
+  padding: 2px 8px;
+  border-radius: 20px;
+  text-transform: uppercase;
+  white-space: nowrap;
+  transition: box-shadow 0.32s;
 }
 
-.modal__btn--save {
-  background: var(--color-accent);
-  color: #fff;
-  border-color: var(--color-accent);
+.badge-priority.alta {
+  background: rgba(248, 113, 113, 0.12);
+  color: #f87171;
+  border: 1px solid rgba(248, 113, 113, 0.3);
+}
+.badge-priority.media {
+  background: rgba(251, 191, 36, 0.1);
+  color: #fbbf24;
+  border: 1px solid rgba(251, 191, 36, 0.3);
+}
+.badge-priority.baja {
+  background: rgba(52, 211, 153, 0.1);
+  color: #34d399;
+  border: 1px solid rgba(52, 211, 153, 0.3);
 }
 
-.modal__btn--save:hover {
-  box-shadow: 0 0 16px var(--color-accent-glow);
-  background: #7aaaf5;
-}
+.task-card:hover .badge-priority.alta  { box-shadow: 0 0 8px rgba(248,113,113,0.4); }
+.task-card:hover .badge-priority.media { box-shadow: 0 0 8px rgba(251,191,36,0.4);  }
+.task-card:hover .badge-priority.baja  { box-shadow: 0 0 8px rgba(52,211,153,0.4);  }
 
-/* MEDIA QUERIES - RESPONSIVE MOVIL */
-
-@media (max-width: 768px) {
-  header {
-    padding: var(--space-md);
-    gap: var(--space-sm);
-  }
-
-  .header__search{max-width: 180px;}
-
-  .layout {
-    flex-direction: column;
-  }
-
-  aside {
-    width: 100%;
-    border-right: none;
-    border-bottom: 1px solid var(--color-border);
-    padding: var(--space-md);
-    flex-direction: row;
-    flex-wrap: wrap;
-    gap: var(--space-md);
-  }
-
-  .sidebar__title { display: none; }
-
-  .sidebar__nav {
-    flex-direction: row;
-    flex-wrap: wrap;
-  }
-
-  .sidebar__stats { display: none; }
-
-  main {
-    padding: var(--space-md);
-    gap: var(--space-lg);
-  }
-
-  .task-card {
-    padding: var(--space-sm) var(--space-md);
-  }
-
-  .modal__row{ flex-direction: column;}
-}
-
-@media (max-width: 480px) {
-  .header__meta { display: none; }
-  .header__search{display: none; }
-  .task-card__title { font-size: 0.85rem; }
+/* ── NAV ITEM ACTIVE ───────────────────────────────────────── */
+/* Clase .active gestionada por JS — combinamos con Tailwind */
+.nav-item.active {
+  color: #5b8def;
+  font-weight: 500;
+  background: rgba(91,141,239,0.1);
+  border-color: #272c3a;
 }

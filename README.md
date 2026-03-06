@@ -87,7 +87,5 @@ Sin instalación adicional. Funciona al momento.
 ---
 
 <div align="center">
-
-
-
 </div>
+>>>>>>>>> Temporary merge branch 2

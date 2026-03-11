@@ -1,0 +1,1 @@
+Aqui documentare experimentos de codigo realizados. Pruebas, intentos y exploraciones tecnicas.

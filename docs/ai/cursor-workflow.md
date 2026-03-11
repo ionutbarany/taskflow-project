@@ -1,0 +1,1 @@
+Documentacion sobre como es trabajar con el IDE Cursor en comparacion con otros IDEs.

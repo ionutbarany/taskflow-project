@@ -1,0 +1,1 @@
+Prompts bien estructurados para pedirle codigo a la IA. Poniendola en contexto, diciendo cuales son los programas que quiero que utilice, que no puede hacer estrictamente, etc...Nada de VibeCoding.

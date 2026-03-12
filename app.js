@@ -12,6 +12,10 @@ const themeToggle = document.getElementById('theme-toggle');
 const iconMoon    = document.getElementById('icon-moon');
 const iconSun     = document.getElementById('icon-sun');
 
+/**
+ * Sincroniza los iconos del selector de tema con la clase `dark` en `<html>`,
+ * alternando la visibilidad de luna/sol y actualizando el `title` del botón.
+ */
 function actualizarIconoTema() {
   const esModoOscuro = html.classList.contains('dark');
   // Modo oscuro activo → mostramos la luna (para ir a claro)
@@ -49,6 +53,12 @@ const searchInput    = document.getElementById('search-input');
 
 // ─── DATOS INICIALES ───
 
+/**
+ * Conjunto de tareas iniciales utilizado como estado por defecto cuando
+ * no hay datos válidos guardados en `localStorage`.
+ *
+ * @type {Array<{id:number, titulo:string, categoria:string, prioridad:string, estado:string}>}
+ */
 const tareasIniciales = [
   { id: 1,  titulo: 'Hacer pedido suplementos',       categoria: '📋 Gestión',       prioridad: 'alta',  estado: 'progreso'   },
   { id: 2,  titulo: 'Proyecto sistema Log In',         categoria: '💻 Desarrollo',    prioridad: 'media', estado: 'progreso'   },
@@ -69,11 +79,31 @@ const tareasIniciales = [
 
 let tasks = cargarTareas();
 
+/**
+ * Carga las tareas almacenadas en `localStorage` bajo la clave `taskflow-v2`.
+ * Si no existen o el formato es inválido, devuelve `tareasIniciales`.
+ *
+ * @returns {Array<{id:number, titulo:string, categoria:string, prioridad:string, estado:string}>}
+ * Lista de tareas que se usará como estado de la aplicación.
+ */
 function cargarTareas() {
   const guardadas = localStorage.getItem('taskflow-v2');
-  return guardadas ? JSON.parse(guardadas) : tareasIniciales;
+  if (!guardadas) return tareasIniciales;
+
+  try {
+    const parsed = JSON.parse(guardadas);
+    // Si por algún motivo el formato no es el esperado, volvemos al estado inicial
+    return Array.isArray(parsed) ? parsed : tareasIniciales;
+  } catch {
+    console.warn('TaskFlow: datos corruptos en localStorage, se restauran tareas iniciales');
+    return tareasIniciales;
+  }
 }
 
+/**
+ * Guarda el array global `tasks` en `localStorage` (clave `taskflow-v2`)
+ * serializándolo en formato JSON.
+ */
 function guardarTareas() {
   localStorage.setItem('taskflow-v2', JSON.stringify(tasks));
 }
@@ -81,6 +111,11 @@ function guardarTareas() {
 
 // ─── RENDERIZADO ───
 
+/**
+ * Vuelve a pintar todas las listas de tareas en el DOM a partir de
+ * `tasks`. Limpia las columnas, crea nuevas cards, actualiza contadores
+ * y aplica el filtro de búsqueda actual.
+ */
 function renderizarTodo() {
   listProgreso.innerHTML   = '';
   listPendiente.innerHTML  = '';
@@ -100,6 +135,14 @@ function renderizarTodo() {
 
 // ─── CREAR CARD ───
 
+/**
+ * Crea el elemento DOM que representa una tarea, con sus estilos,
+ * badges y manejadores de eventos (toggle de completada y eliminación).
+ *
+ * @param {{id:number, titulo:string, categoria:string, prioridad:string, estado:string}} tarea
+ * Objeto de tarea que se va a renderizar.
+ * @returns {HTMLDivElement} Card de tarea lista para insertarse en el DOM.
+ */
 function crearCard(tarea) {
   const div = document.createElement('div');
 
@@ -171,12 +214,19 @@ document.querySelectorAll('.section__add').forEach(function(btn) {
   });
 });
 
+/**
+ * Abre el modal para añadir una nueva tarea, dejando el título vacío
+ * y enfocando el campo de texto.
+ */
 function abrirModal() {
   modal.classList.remove('hidden');
   modalTitulo.value = '';
   modalTitulo.focus();
 }
 
+/**
+ * Cierra el modal de creación de tarea.
+ */
 function cerrarModal() {
   modal.classList.add('hidden');
 }
@@ -221,6 +271,10 @@ modalTitulo.addEventListener('keydown', function(e) {
 
 searchInput.addEventListener('input', aplicarBusqueda);
 
+/**
+ * Aplica el filtro de búsqueda actual sobre las tarjetas de tareas,
+ * ocultando aquellas cuyo título no contiene el texto introducido.
+ */
 function aplicarBusqueda() {
   const query = searchInput.value.toLowerCase().trim();
   document.querySelectorAll('.task-card').forEach(function(card) {
@@ -232,20 +286,44 @@ function aplicarBusqueda() {
 
 // ─── CONTADORES ───
 
+/**
+ * Recalcula los totales de tareas (por estado, prioridad y categoría)
+ * y actualiza los elementos del DOM que muestran esos contadores y el
+ * porcentaje completado.
+ */
 function actualizarContadores() {
-  const total       = tasks.length;
-  const completadas = tasks.filter(t => t.estado === 'completada').length;
-  const progreso    = tasks.filter(t => t.estado === 'progreso').length;
-  const pendiente   = tasks.filter(t => t.estado === 'pendiente').length;
-  const alta        = tasks.filter(t => t.prioridad === 'alta').length;
+  const total = tasks.length;
+
+  let completadas = 0;
+  let progreso    = 0;
+  let pendiente   = 0;
+  let alta        = 0;
+
+  const categorias = {
+    Desarrollo: 0,
+    Deporte: 0,
+    Gestión: 0,
+    Investigación: 0,
+  };
+
+  tasks.forEach(function(t) {
+    if (t.estado === 'completada') completadas++;
+    if (t.estado === 'progreso')   progreso++;
+    if (t.estado === 'pendiente')  pendiente++;
+    if (t.prioridad === 'alta')    alta++;
+
+    Object.keys(categorias).forEach(function(cat) {
+      if (t.categoria.includes(cat)) categorias[cat]++;
+    });
+  });
 
   setText('count-todas',      total);
   setText('count-progreso',   progreso);
   setText('count-completada', completadas);
   setText('count-alta',       alta);
 
-  ['Desarrollo', 'Deporte', 'Gestión', 'Investigación'].forEach(function(cat) {
-    setText('count-' + cat, tasks.filter(t => t.categoria.includes(cat)).length);
+  Object.keys(categorias).forEach(function(cat) {
+    setText('count-' + cat, categorias[cat]);
   });
 
   setText('label-progreso',   progreso    + (progreso    === 1 ? ' tarea' : ' tareas'));
@@ -260,11 +338,24 @@ function actualizarContadores() {
   if (fill) fill.style.width = porcentaje + '%';
 }
 
+/**
+ * Actualiza el `textContent` de un elemento por su `id`, si existe
+ * en el documento.
+ *
+ * @param {string} id - Identificador del elemento en el DOM.
+ * @param {string|number} valor - Texto o número a mostrar.
+ */
 function setText(id, valor) {
   const el = document.getElementById(id);
   if (el) el.textContent = valor;
 }
 
+/**
+ * Devuelve la misma cadena con la primera letra en mayúscula.
+ *
+ * @param {string} str - Texto a capitalizar.
+ * @returns {string} Cadena con la primera letra en mayúscula.
+ */
 function capitalizar(str) {
   return str.charAt(0).toUpperCase() + str.slice(1);
 }

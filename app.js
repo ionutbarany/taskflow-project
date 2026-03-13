@@ -45,6 +45,7 @@ const modal          = document.getElementById('modal');
 const modalTitulo    = document.getElementById('modal-titulo');
 const modalCategoria = document.getElementById('modal-categoria');
 const modalPrioridad = document.getElementById('modal-prioridad');
+const modalFecha     = document.getElementById('modal-fecha');
 const modalCancel    = document.getElementById('modal-cancel');
 const modalSave      = document.getElementById('modal-save');
 
@@ -156,6 +157,12 @@ function crearCard(tarea) {
   div.dataset.id = tarea.id;
   if (tarea.estado === 'completada') div.classList.add('done');
 
+  const hoy = new Date().toISOString().split('T')[0];
+  const badgeFecha = tarea.fechaLimite ? `
+  <span class="badge-fecha ${tarea.fechaLimite === hoy ? 'vence-hoy' : tarea.fechaLimite < hoy ? 'vencida' : ''}">
+    ${tarea.fechaLimite === hoy ? '⚠️ Vence hoy' : tarea.fechaLimite < hoy ? '🔴 Vencida' : '📅 ' + formatearFecha(tarea.fechaLimite)}
+  </span>` : '';
+
   div.innerHTML = `
     <div class="task-card__check
                 w-5 h-5 rounded-full shrink-0
@@ -173,6 +180,7 @@ function crearCard(tarea) {
       </div>
       <div class="task-card__bottom flex items-center gap-2">
         <span class="badge-category">${tarea.categoria}</span>
+        ${badgeFecha}
         <span class="badge-priority ${tarea.prioridad}">${capitalizar(tarea.prioridad)}</span>
       </div>
     </div>
@@ -193,10 +201,21 @@ function crearCard(tarea) {
 
   div.querySelector('.btn-delete').addEventListener('click', function(e) {
     e.stopPropagation();
-    tasks = tasks.filter(t => t.id !== tarea.id);
-    guardarTareas();
-    div.remove();
-    actualizarContadores();
+
+    gsap.to(div, {
+      x: 120,
+      opacity: 0,
+      scale: 0.85,
+      rotation: 3,
+      duration: 0.4,
+      ease: 'power3.in',
+      onComplete: function() {
+        tasks = tasks.filter(t => t.id !== tarea.id);
+        guardarTareas();
+        div.remove();
+        actualizarContadores();
+      }
+    });
   });
 
   return div;
@@ -221,6 +240,7 @@ document.querySelectorAll('.section__add').forEach(function(btn) {
 function abrirModal() {
   modal.classList.remove('hidden');
   modalTitulo.value = '';
+  modalFecha.value = '';
   modalTitulo.focus();
 }
 
@@ -248,11 +268,12 @@ modalSave.addEventListener('click', function() {
   }
 
   const nuevaTarea = {
-    id:        Date.now(),
-    titulo:    titulo,
-    categoria: modalCategoria.value,
-    prioridad: modalPrioridad.value,
-    estado:    estadoParaNuevaTarea
+    id:          Date.now(),
+    titulo:      titulo,
+    categoria:   modalCategoria.value,
+    prioridad:   modalPrioridad.value,
+    estado:      estadoParaNuevaTarea,
+    fechaLimite: modalFecha.value || null
   };
 
   tasks.push(nuevaTarea);
@@ -358,6 +379,11 @@ function setText(id, valor) {
  */
 function capitalizar(str) {
   return str.charAt(0).toUpperCase() + str.slice(1);
+}
+
+function formatearFecha(fechaISO) {
+  const [anyo, mes, dia] = fechaISO.split('-');
+  return `${dia}/${mes}/${anyo}`;
 }
 
 

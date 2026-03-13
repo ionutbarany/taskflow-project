@@ -364,3 +364,40 @@ function capitalizar(str) {
 // ─── ARRANQUE ───
 
 renderizarTodo();
+
+const opcionesSortable = {
+  group: 'taskflow',
+  animation: 150,
+  ghostClass: 'sortable-ghost',
+  chosenClass: 'sortable-chosen',
+  dragClass: 'sortable-drag',
+  onEnd: function(evt) {
+    const idArrastrada = parseInt(evt.item.dataset.id);
+    const columnaDestino = evt.to.id;
+
+    const mapaEstado = {
+      'list-progreso':   'progreso',
+      'list-pendiente':  'pendiente',
+      'list-completada': 'completada'
+    };
+
+    const tarea = tasks.find(t => t.id === idArrastrada);
+    tarea.estado = mapaEstado[columnaDestino];
+
+    // Reordenar el array tasks según el nuevo orden visual de las tres columnas
+    const idsProgreso   = [...listProgreso.querySelectorAll('.task-card')].map(c => parseInt(c.dataset.id));
+    const idsPendiente  = [...listPendiente.querySelectorAll('.task-card')].map(c => parseInt(c.dataset.id));
+    const idsCompletada = [...listCompletada.querySelectorAll('.task-card')].map(c => parseInt(c.dataset.id));
+    tasks = [
+      ...idsProgreso.map(id => tasks.find(t => t.id === id)),
+      ...idsPendiente.map(id => tasks.find(t => t.id === id)),
+      ...idsCompletada.map(id => tasks.find(t => t.id === id))
+    ];
+    guardarTareas();
+    renderizarTodo();
+  }
+};
+
+Sortable.create(listProgreso,   opcionesSortable);
+Sortable.create(listPendiente,  opcionesSortable);
+Sortable.create(listCompletada, opcionesSortable);

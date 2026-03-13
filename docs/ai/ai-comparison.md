@@ -1,14 +1,15 @@
-Comparacion de codigo entre la IA y mi codigo de buen junior que soy recien graduado en CEAC....
+# Comparacion de codigo entre Claude y ChatGPT
 
+---
 
+## Explicacion conceptos Closure, Eventloop y DOM en Claude
 
+### 🔒 Closures (Cierres)
 
-
-Explicacion conceptos Clousure,Eventloop y DOM en Claude
----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-🔒 Closures (Cierres)
 Un closure es una función que recuerda el entorno en el que fue creada, incluso cuando se ejecuta fuera de ese entorno.
-javascriptfunction crearContador() {
+
+```javascript
+function crearContador() {
   let count = 0; // Variable en el entorno externo
 
   return function () {
@@ -27,37 +28,52 @@ La función interna sigue teniendo acceso a `count` aunque `crearContador` ya te
 
 ---
 
-## 🔄 Event Loop (Bucle de eventos)
+### 🔄 Event Loop (Bucle de eventos)
 
 JavaScript es **single-threaded** (un solo hilo), pero puede manejar operaciones asíncronas gracias al Event Loop. Funciona con tres componentes:
+
 ```
 Call Stack      →  donde se ejecuta el código sincrónico
 Web APIs / Node →  donde viven los timers, fetch, etc.
 Callback Queue  →  cola de funciones listas para ejecutarse
-javascriptconsole.log("1");
+```
+
+```javascript
+console.log("1");
 
 setTimeout(() => console.log("2"), 0);
 
 console.log("3");
 
 // Output: 1 → 3 → 2
+```
+
 El setTimeout, aunque tenga 0ms, pasa por las Web APIs y la cola. El Event Loop solo mueve callbacks a la Call Stack cuando está completamente vacía. Esto explica por qué el código asíncrono siempre se ejecuta después del sincrónico.
 
-🌳 DOM (Document Object Model)
+---
+
+### 🌳 DOM (Document Object Model)
+
 El DOM es la representación en memoria de una página HTML como un árbol de objetos que JavaScript puede leer y manipular.
-html<body>
+
+```html
+<body>
   <div id="app">
     <h1>Hola</h1>
     <p>Mundo</p>
   </div>
 </body>
 ```
+
 ```
 body
  └── div#app
       ├── h1  →  "Hola"
       └── p   →  "Mundo"
-javascript// Leer
+```
+
+```javascript
+// Leer
 const titulo = document.querySelector("h1");
 
 // Modificar
@@ -68,25 +84,32 @@ titulo.style.color = "blue";
 const btn = document.createElement("button");
 btn.textContent = "Click me";
 document.body.appendChild(btn);
+```
+
 El DOM no es JavaScript en sí mismo, es una API del navegador que JS usa para interactuar con el HTML. Frameworks como React o Vue construyen abstracciones encima del DOM para hacerlo más eficiente (Virtual DOM).
 
-Resumen rápido
-ConceptoEn una fraseClosureUna función que recuerda su entorno de creaciónEvent LoopEl mecanismo que permite la asincronía en un solo hiloDOMEl árbol de objetos que representa tu HTML en memoria
----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+### Resumen rápido
 
+| Concepto   | En una frase                                          |
+|------------|-------------------------------------------------------|
+| Closure    | Una función que recuerda su entorno de creación       |
+| Event Loop | El mecanismo que permite la asincronía en un solo hilo|
+| DOM        | El árbol de objetos que representa tu HTML en memoria |
 
+---
 
+## Explicacion conceptos Closure, Eventloop y DOM en ChatGPT
 
-Explicacion conceptos Clousure,Eventloop y DOM en ChatGPT
----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-1. Closures (Clausuras)
+### 1. Closures (Clausuras)
 
 Un closure ocurre cuando una función recuerda las variables del lugar donde fue creada, incluso después de que esa función externa haya terminado de ejecutarse.
 
 En otras palabras:
 👉 una función interna mantiene acceso al contexto de la función externa.
 
-Ejemplo sencillo
+**Ejemplo sencillo**
+
+```javascript
 function contador() {
   let numero = 0;
 
@@ -101,32 +124,23 @@ const incrementar = contador();
 console.log(incrementar()); // 1
 console.log(incrementar()); // 2
 console.log(incrementar()); // 3
-Qué está pasando
+```
 
-contador() crea la variable numero
+**Qué está pasando**
 
-devuelve una función interna
+- `contador()` crea la variable `numero`
+- devuelve una función interna
+- esa función recuerda la variable `numero`
 
-esa función recuerda la variable numero
+Aunque `contador()` ya terminó, `numero` sigue existiendo gracias al closure.
 
-Aunque contador() ya terminó, numero sigue existiendo gracias al closure.
+**Para qué se usan**
 
-Para qué se usan
+Closures se usan mucho para: crear variables privadas, encapsulación, callbacks, programación funcional y hooks en frameworks.
 
-Closures se usan mucho para:
+**Ejemplo real: proteger datos privados**
 
-crear variables privadas
-
-encapsulación
-
-callbacks
-
-programación funcional
-
-hooks en frameworks
-
-Ejemplo real: proteger datos privados.
-
+```javascript
 function crearCuenta() {
   let saldo = 0;
 
@@ -135,31 +149,31 @@ function crearCuenta() {
     verSaldo: () => saldo
   }
 }
+```
 
-Aquí saldo no puede ser modificado directamente desde fuera.
+Aquí `saldo` no puede ser modificado directamente desde fuera.
 
-2. Event Loop
+---
+
+### 2. Event Loop
 
 El event loop es el mecanismo que permite que JavaScript ejecute código asíncrono aunque tenga un solo hilo de ejecución.
 
 JavaScript es single-threaded, pero puede manejar muchas cosas a la vez gracias al event loop.
 
-Cómo funciona
+**Cómo funciona**
 
-El sistema tiene principalmente:
-
-Call Stack
-
-Web APIs
-
-Callback Queue
-
-Event Loop
+El sistema tiene principalmente: Call Stack, Web APIs, Callback Queue y Event Loop.
 
 Flujo simplificado:
 
+```
 Call Stack → Web APIs → Callback Queue → Event Loop → Call Stack
-Ejemplo
+```
+
+**Ejemplo**
+
+```javascript
 console.log("Inicio");
 
 setTimeout(() => {
@@ -167,91 +181,79 @@ setTimeout(() => {
 }, 0);
 
 console.log("Fin");
+```
 
 Resultado real:
 
+```
 Inicio
 Fin
 Timer
-Por qué ocurre
+```
 
-console.log("Inicio") → stack
+**Por qué ocurre**
 
-setTimeout() → enviado a Web API
-
-console.log("Fin") → stack
-
-cuando termina el stack → event loop mueve el callback
-
-se ejecuta "Timer"
+- `console.log("Inicio")` → stack
+- `setTimeout()` → enviado a Web API
+- `console.log("Fin")` → stack
+- cuando termina el stack → event loop mueve el callback
+- se ejecuta "Timer"
 
 Aunque el timeout sea 0 ms, siempre espera a que el stack esté vacío.
 
-Para qué sirve
+**Para qué sirve**
 
-Permite manejar:
+Permite manejar peticiones HTTP, timers, eventos del usuario, promesas y animaciones sin bloquear la aplicación.
 
-peticiones HTTP
+---
 
-timers
-
-eventos del usuario
-
-promesas
-
-animaciones
-
-Sin bloquear la aplicación.
-
-3. DOM (Document Object Model)
+### 3. DOM (Document Object Model)
 
 El DOM es una representación en forma de árbol de un documento HTML que el navegador crea para que JavaScript pueda manipular la página.
 
-Cuando el navegador carga HTML, crea una estructura de nodos.
+**Ejemplo HTML**
 
-Ejemplo HTML
+```html
 <body>
   <h1>Hola</h1>
   <button>Click</button>
 </body>
+```
 
 El DOM se convierte en algo así:
 
+```
 Document
  └── html
       └── body
            ├── h1
            └── button
+```
 
-Cada elemento es un nodo.
+**JavaScript puede modificar el DOM**
 
-JavaScript puede modificar el DOM
+```javascript
 const titulo = document.querySelector("h1");
 titulo.textContent = "Hola mundo";
+```
 
-Esto cambia el contenido del <h1>.
+**También podemos reaccionar a eventos**
 
-También podemos reaccionar a eventos
+```javascript
 const boton = document.querySelector("button");
 
 boton.addEventListener("click", () => {
   alert("Has hecho click");
 });
+```
 
-Esto conecta el DOM con el event loop.
+**Cómo se relacionan los tres**
 
-Cómo se relacionan los tres
-
-En aplicaciones web reales:
-
-DOM → estructura de la página
-
-Event Loop → maneja eventos y asincronía
-
-Closures → mantienen estado dentro de funciones
+En aplicaciones web reales: el DOM es la estructura de la página, el Event Loop maneja eventos y asincronía, y los Closures mantienen estado dentro de funciones.
 
 Ejemplo real simplificado:
 
+```javascript
 function contadorClicks() {
   let clicks = 0;
 
@@ -263,31 +265,29 @@ function contadorClicks() {
 }
 
 contadorClicks();
+```
 
-Aquí:
+Aquí: DOM → botón, Event Loop → evento click, Closure → variable `clicks`.
 
-DOM → botón
+### 💡 Regla rápida para recordarlos
 
-Event Loop → evento click
+| Concepto   | Qué es                                  |
+|------------|-----------------------------------------|
+| Closure    | función que recuerda su contexto        |
+| Event Loop | sistema que gestiona la asincronía      |
+| DOM        | representación de la página web         |
 
-Closure → variable clicks
+---
 
-💡 Regla rápida para recordarlos
+Comparando ChatGPT y Claude me he dado cuenta que Claude va mas directo al grano, te saca el codigo y te hace un breve explicacion como mucho. Sin embargo ChatGPT la veo mas profunda, te explica todos los ejemplos mejor con emojis y asi a primera vista queda mas claro.
 
-Concepto	Qué es
-Closure	función que recuerda su contexto
-Event Loop	sistema que gestiona la asincronía
-DOM	representación de la página web
----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-Comparando ChatGPT y Claude me he dado cuenta que Claude va mas directo al grano, te saca el codigo y te hace un breve explicacion como mucho. Sin embargo ChatGPT la veo mas profunda, te explica todos los ejemplos mejor con emojis  y asi a primera vista queda mas claro. 
+---
 
+## Codigo con errores intencionales en JavaScript corregido por Claude
 
+### Funcion 1 - Sumar numeros de un Array
 
-
-Codigo con errores intencionales en JavaScript corregido por Claude
----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-Funcion 1 --- Sumar numeros de un Array.
-
+```javascript
 function sumarArray(numeros) {
   let total = 0;
 
@@ -299,9 +299,12 @@ function sumarArray(numeros) {
 }
 
 console.log(sumarArray([10, 20, 30]));
+```
 
-Bug 1 — Off-by-one error (<= en lugar de <)
-javascript// ❌ Con bug
+**Bug 1 — Off-by-one error (`<=` en lugar de `<`)**
+
+```javascript
+// ❌ Con bug
 for (let i = 0; i <= numeros.length; i++) { ... }
 //                 ^^
 //   Da una vuelta de más: accede a numeros[3]
@@ -309,147 +312,15 @@ for (let i = 0; i <= numeros.length; i++) { ... }
 
 // ✅ Corrección
 for (let i = 0; i < numeros.length; i++) { ... }
-El array [10, 20, 30] tiene índices 0, 1, 2. Con <= el loop llega hasta el índice 3, que devuelve undefined. Cualquier número sumado con undefined produce NaN, y ese valor contamina todo el resultado.
+```
 
-----
+El array `[10, 20, 30]` tiene índices 0, 1, 2. Con `<=` el loop llega hasta el índice 3, que devuelve `undefined`. Cualquier número sumado con `undefined` produce `NaN`, y ese valor contamina todo el resultado.
 
+---
 
-Funcion 2 --- Buscar un usuario por nombre.
+### Funcion 2 - Buscar un usuario por nombre
 
-const usuarios = [
-  { nombre: "Ana",   edad: 25 },
-  { nombre: "Luis",  edad: 30 },
-  { nombre: "María", edad: 22 },
-];
-
-function buscarUsuario(nombre) {
-  for (let i = 0; i < usuarios.length; i++) {
-    if (usuarios[i].nombre = nombre) {
-      return usuarios[i];
-    }
-  }
-  return null;
-}
-
-console.log(buscarUsuario("Luis")); 
-
-Bug 2 — Asignación = en vez de comparación ===
-javascript// ❌ Con bug
-if (usuarios[i].nombre = nombre) { ... }
-//                     ^
-//   Esto NO compara, sino que ASIGNA el valor
-//   de `nombre` a `usuarios[i].nombre`
-//   Una string no vacía es siempre truthy → siempre entra
-
-// ✅ Corrección
-if (usuarios[i].nombre === nombre) { ... }
-Este es uno de los bugs más clásicos y traicioneros de JavaScript. El operador = sobreescribe la propiedad y además la condición evalúa el valor asignado, que al ser un string no vacío ("Luis") es siempre true. La función siempre retorna el primer elemento del array sin importar qué nombre busques.
-
-----
-
-Función 3 — Ejecutar acción con delay.
-
-javascriptfunction ejecutarConDelay() {
-  for (var i = 1; i <= 3; i++) {
-    setTimeout(function () {
-      console.log("Ejecutando tarea número: " + i);
-    }, i * 1000);
-  }
-}
-
-ejecutarConDelay();
-
-Bug 3 — var no tiene block scope dentro del loop
-javascript// ❌ Con bug
-for (var i = 1; i <= 3; i++) {
-  setTimeout(function () {
-    console.log(i); // Todos leen el mismo `i`
-  }, i * 1000);
-}
-// Cuando los callbacks se ejecutan, el loop ya terminó
-// y `var i` vale 4 en todos los casos
-
-// ✅ Corrección con `let`
-for (let i = 1; i <= 3; i++) {
-  setTimeout(function () {
-    console.log(i); // Cada iteración tiene su propio `i`
-  }, i * 1000);
-}
-var tiene function scope, no block scope. Las tres funciones del setTimeout comparten la misma variable i en memoria. Para cuando el Event Loop las ejecuta, el loop ya terminó y i es 4. Al usar let, cada iteración crea su propio closure con su propia copia de i, resolviendo el problema. Aquí se unen dos conceptos que vimos antes: el Event Loop y los Closures.
----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-
-
-Codigo con errores intencionales en JavaScript corregido por ChatGPT
----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-Funcion 1 --- Sumar numeros de un Array.
-
-function sumarArray(numeros) {
-  let total = 0;
-
-  for (let i = 0; i <= numeros.length; i++) {
-    total += numeros[i];
-  }
-
-  return total;
-}
-
-console.log(sumarArray([10, 20, 30]));
-
-1️⃣ Bug en sumarArray
-
-❌ Problema
-
-La condición del for está mal:
-
-i <= numeros.length
-
-Los arrays empiezan en índice 0 y terminan en length - 1.
-
-Si el array tiene 3 elementos:
-
-[10, 20, 30]
- índices:
- 0   1   2
-
-Pero el bucle hace:
-
-i = 0
-i = 1
-i = 2
-i = 3  ❌
-
-Cuando i = 3:
-
-numeros[3] === undefined
-
-Entonces ocurre:
-
-total + undefined = NaN
-
-Por eso el resultado final es NaN.
-
-✅ Solución
-for (let i = 0; i < numeros.length; i++)
-
-Código corregido:
-
-function sumarArray(numeros) {
-  let total = 0;
-
-  for (let i = 0; i < numeros.length; i++) {
-    total += numeros[i];
-  }
-
-  return total;
-}
-
-Resultado correcto:
-
-60
------
-
-Funcion 2 --- Buscar un usuario por nombre.
-
+```javascript
 const usuarios = [
   { nombre: "Ana",   edad: 25 },
   { nombre: "Luis",  edad: 30 },
@@ -466,73 +337,30 @@ function buscarUsuario(nombre) {
 }
 
 console.log(buscarUsuario("Luis"));
+```
 
-2️⃣ Bug en buscarUsuario
+**Bug 2 — Asignación `=` en vez de comparación `===`**
 
-if (usuarios[i].nombre = nombre)
-❌ Problema
+```javascript
+// ❌ Con bug
+if (usuarios[i].nombre = nombre) { ... }
+//                     ^
+//   Esto NO compara, sino que ASIGNA el valor
+//   de `nombre` a `usuarios[i].nombre`
+//   Una string no vacía es siempre truthy → siempre entra
 
-Aquí usas asignación (=) en lugar de comparación.
+// ✅ Corrección
+if (usuarios[i].nombre === nombre) { ... }
+```
 
-Esto hace que:
+Este es uno de los bugs más clásicos y traicioneros de JavaScript. El operador `=` sobreescribe la propiedad y además la condición evalúa el valor asignado, que al ser un string no vacío (`"Luis"`) es siempre `true`. La función siempre retorna el primer elemento del array sin importar qué nombre busques.
 
-usuarios[i].nombre = nombre
+---
 
-signifique:
+### Función 3 — Ejecutar acción con delay
 
-👉 "asigna el valor nombre a usuarios[i].nombre"
-
-Además, en JavaScript una asignación devuelve el valor asignado, que es un string, y los strings son truthy.
-
-Por lo tanto el if siempre se evalúa como true en la primera iteración.
-
-Por eso siempre devuelve:
-
-{ nombre: "Luis", edad: 25 }  ❌
-
-Porque además modifica el array.
-
-🔥 Qué está pasando realmente
-
-Primera iteración:
-
-usuarios[0].nombre = "Luis"
-
-El array queda:
-
-[
- { nombre: "Luis", edad: 25 },
- { nombre: "Luis", edad: 30 },
- { nombre: "María", edad: 22 }
-]
-
-Y devuelve el primero.
-
-✅ Solución
-
-Usar comparación estricta:
-
-if (usuarios[i].nombre === nombre)
-
-Código corregido:
-
-function buscarUsuario(nombre) {
-  for (let i = 0; i < usuarios.length; i++) {
-    if (usuarios[i].nombre === nombre) {
-      return usuarios[i];
-    }
-  }
-  return null;
-}
-
-Resultado correcto:
-
-{ nombre: "Luis", edad: 30 }
-----
-
-Función 3 — Ejecutar acción con delay.
-
-javascriptfunction ejecutarConDelay() {
+```javascript
+function ejecutarConDelay() {
   for (var i = 1; i <= 3; i++) {
     setTimeout(function () {
       console.log("Ejecutando tarea número: " + i);
@@ -541,61 +369,165 @@ javascriptfunction ejecutarConDelay() {
 }
 
 ejecutarConDelay();
+```
 
-3️⃣ Bug en ejecutarConDelay
+**Bug 3 — `var` no tiene block scope dentro del loop**
 
-❌ Problema
+```javascript
+// ❌ Con bug
+for (var i = 1; i <= 3; i++) {
+  setTimeout(function () {
+    console.log(i); // Todos leen el mismo `i`
+  }, i * 1000);
+}
+// Cuando los callbacks se ejecutan, el loop ya terminó
+// y `var i` vale 4 en todos los casos
 
-El problema es var + asincronía + closure.
+// ✅ Corrección con `let`
+for (let i = 1; i <= 3; i++) {
+  setTimeout(function () {
+    console.log(i); // Cada iteración tiene su propio `i`
+  }, i * 1000);
+}
+```
 
-var tiene scope de función, no de bloque.
+`var` tiene function scope, no block scope. Las tres funciones del `setTimeout` comparten la misma variable `i` en memoria. Para cuando el Event Loop las ejecuta, el loop ya terminó y `i` es 4. Al usar `let`, cada iteración crea su propio closure con su propia copia de `i`, resolviendo el problema. Aquí se unen dos conceptos que vimos antes: el Event Loop y los Closures.
 
-Entonces todas las funciones dentro del setTimeout comparten la misma variable i.
+---
 
-Flujo real:
+## Codigo con errores intencionales en JavaScript corregido por ChatGPT
 
-1️⃣ El for se ejecuta completamente primero
+### Funcion 1 --- Sumar numeros de un Array
 
-i = 1
-i = 2
-i = 3
-i = 4  ← termina el bucle
+```javascript
+function sumarArray(numeros) {
+  let total = 0;
 
-2️⃣ Luego se ejecutan los setTimeout.
+  for (let i = 0; i <= numeros.length; i++) {
+    total += numeros[i];
+  }
 
-Pero cuando se ejecutan:
+  return total;
+}
 
-i = 4
+console.log(sumarArray([10, 20, 30]));
+```
 
-Entonces imprime:
+**1️⃣ Bug en sumarArray**
 
-4
-4
-4
+❌ **Problema**
 
-Esto ocurre por el closure que captura la referencia de i.
+La condición del `for` está mal: `i <= numeros.length`
 
-✅ Solución 1 (la moderna)
+Los arrays empiezan en índice 0 y terminan en `length - 1`. Con 3 elementos el bucle llega a `i = 3`, accede a `numeros[3]` que es `undefined`, y `total + undefined = NaN`.
 
-Usar let.
+✅ **Solución**
 
-let tiene block scope, creando una nueva i en cada iteración.
+```javascript
+for (let i = 0; i < numeros.length; i++)
+```
 
+**Código corregido:**
+
+```javascript
+function sumarArray(numeros) {
+  let total = 0;
+
+  for (let i = 0; i < numeros.length; i++) {
+    total += numeros[i];
+  }
+
+  return total;
+}
+```
+
+Resultado correcto: `60`
+
+---
+
+### Funcion 2 --- Buscar un usuario por nombre
+
+```javascript
+const usuarios = [
+  { nombre: "Ana",   edad: 25 },
+  { nombre: "Luis",  edad: 30 },
+  { nombre: "María", edad: 22 },
+];
+
+function buscarUsuario(nombre) {
+  for (let i = 0; i < usuarios.length; i++) {
+    if (usuarios[i].nombre = nombre) {
+      return usuarios[i];
+    }
+  }
+  return null;
+}
+
+console.log(buscarUsuario("Luis"));
+```
+
+**2️⃣ Bug en buscarUsuario**
+
+❌ **Problema**
+
+`if (usuarios[i].nombre = nombre)` usa asignación (`=`) en lugar de comparación. Esto asigna el valor de `nombre` a `usuarios[i].nombre`, y como los strings son truthy, el `if` siempre es `true` en la primera iteración, devolviendo siempre el primer elemento y además mutando el array.
+
+✅ **Solución**
+
+```javascript
+if (usuarios[i].nombre === nombre)
+```
+
+**Código corregido:**
+
+```javascript
+function buscarUsuario(nombre) {
+  for (let i = 0; i < usuarios.length; i++) {
+    if (usuarios[i].nombre === nombre) {
+      return usuarios[i];
+    }
+  }
+  return null;
+}
+```
+
+Resultado correcto: `{ nombre: "Luis", edad: 30 }`
+
+---
+
+### Función 3 — Ejecutar acción con delay
+
+```javascript
+function ejecutarConDelay() {
+  for (var i = 1; i <= 3; i++) {
+    setTimeout(function () {
+      console.log("Ejecutando tarea número: " + i);
+    }, i * 1000);
+  }
+}
+
+ejecutarConDelay();
+```
+
+**3️⃣ Bug en ejecutarConDelay**
+
+❌ **Problema**
+
+`var` tiene scope de función, no de bloque. Todas las funciones dentro del `setTimeout` comparten la misma variable `i`. Cuando se ejecutan, el loop ya terminó e `i` vale 4, imprimiendo `4 4 4`.
+
+✅ **Solución 1 (la moderna)**
+
+```javascript
 for (let i = 1; i <= 3; i++) {
   setTimeout(function () {
     console.log("Ejecutando tarea número: " + i);
   }, i * 1000);
 }
+```
 
-Resultado:
+✅ **Solución 2 (closure manual)**
 
-1
-2
-3
-✅ Solución 2 (closure manual)
-
-Forma clásica antes de let:
-
+```javascript
 for (var i = 1; i <= 3; i++) {
   (function(numero) {
     setTimeout(function () {
@@ -603,23 +535,23 @@ for (var i = 1; i <= 3; i++) {
     }, numero * 1000);
   })(i);
 }
+```
 
-Aquí creamos una closure con un parámetro propio.
----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+---
 
+## Implementacion de tres funciones distintas en Claude
 
-Implemenatcion de tres funciones distintas en Claude.
----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+### Función 1 — Simular una llamada a una API
 
-Función 1 — Simular una llamada a una API
-Simula el comportamiento de un fetch real con un delay artificial.
+Simula el comportamiento de un `fetch` real con un delay artificial.
 
+```javascript
 function obtenerUsuario(id) {
   return new Promise((resolve, reject) => {
     setTimeout(() => {
       const usuarios = {
-        1: { id: 1, nombre: "Ana", email: "ana@email.com" },
-        2: { id: 2, nombre: "Luis", email: "luis@email.com" },
+        1: { id: 1, nombre: "Ana",   email: "ana@email.com" },
+        2: { id: 2, nombre: "Luis",  email: "luis@email.com" },
         3: { id: 3, nombre: "María", email: "maria@email.com" },
       };
 
@@ -640,13 +572,18 @@ obtenerUsuario(2)
   .catch(error => console.error("Error:", error.message));
 
 // → Usuario encontrado: { id: 2, nombre: 'Luis', email: 'luis@email.com' }
-Conceptos clave: new Promise, resolve, reject, .then(), .catch()
-----
+```
 
-Función 2 — Ejecutar tareas en secuencia con async/await
+Conceptos clave: `new Promise`, `resolve`, `reject`, `.then()`, `.catch()`
+
+---
+
+### Función 2 — Ejecutar tareas en secuencia con async/await
+
 Descarga tres recursos uno tras otro, esperando que cada uno termine antes de continuar.
 
-javascriptfunction descargarRecurso(nombre, tiempo) {
+```javascript
+function descargarRecurso(nombre, tiempo) {
   return new Promise((resolve) => {
     setTimeout(() => {
       resolve(`✅ ${nombre} descargado`);
@@ -657,10 +594,10 @@ javascriptfunction descargarRecurso(nombre, tiempo) {
 async function descargarEnSecuencia() {
   console.log("Iniciando descargas...\n");
 
-  const imagenes  = await descargarRecurso("Imágenes",  1000);
+  const imagenes   = await descargarRecurso("Imágenes",   1000);
   console.log(imagenes);
 
-  const videos    = await descargarRecurso("Videos",    1500);
+  const videos     = await descargarRecurso("Videos",     1500);
   console.log(videos);
 
   const documentos = await descargarRecurso("Documentos", 800);
@@ -676,13 +613,18 @@ descargarEnSecuencia();
 // → ✅ Videos descargado       (después de 1.5s más)
 // → ✅ Documentos descargado   (después de 0.8s más)
 // → 🎉 Todo descargado!
-Conceptos clave: async, await, ejecución secuencial
-----
+```
 
-Función 3 — Ejecutar tareas en paralelo con Promise.all
+Conceptos clave: `async`, `await`, ejecución secuencial
+
+---
+
+### Función 3 — Ejecutar tareas en paralelo con Promise.all
+
 A diferencia de la anterior, lanza todas las descargas al mismo tiempo y espera que todas terminen.
 
-javascriptfunction descargarArchivo(nombre, tiempo) {
+```javascript
+function descargarArchivo(nombre, tiempo) {
   return new Promise((resolve) => {
     setTimeout(() => {
       resolve(`✅ ${nombre} listo`);
@@ -715,17 +657,19 @@ descargarEnParalelo();
 // → ✅ Archivo B listo
 // → ✅ Archivo C listo
 // → ⏱ Tiempo total: 2.0s
-Conceptos clave: Promise.all, ejecución paralela, optimización de tiempos
----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+```
 
+Conceptos clave: `Promise.all`, ejecución paralela, optimización de tiempos
 
+---
 
-Implementacion de tres funciones distintas con ChatGPT
----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-1️⃣ Simular una llamada a una API
+## Implementacion de tres funciones distintas con ChatGPT
 
-Normalmente se usa una Promise + setTimeout para simular latencia de red.
+### 1️⃣ Simular una llamada a una API
 
+Normalmente se usa una `Promise` + `setTimeout` para simular latencia de red.
+
+```javascript
 function fakeApiCall(data, delay) {
   return new Promise((resolve, reject) => {
     setTimeout(() => {
@@ -745,23 +689,15 @@ fakeApiCall({ usuario: "Ana" }, 2000)
   .catch(error => {
     console.error("Error:", error);
   });
-Qué hace
+```
 
-Devuelve una Promise
+Salida después de 2 segundos: `Respuesta de la API: { status: 200, data: { usuario: "Ana" } }`
 
-Espera delay milisegundos
+---
 
-Resuelve con datos simulados
+### 2️⃣ Ejecutar tareas en secuencia con async/await
 
-Salida después de 2 segundos:
-
-Respuesta de la API: { status: 200, data: { usuario: "Ana" } }
-----
-
-2️⃣ Ejecutar tareas en secuencia con async/await
-
-Aquí queremos que una tarea espere a que termine la anterior.
-
+```javascript
 function tarea(nombre, delay) {
   return new Promise(resolve => {
     setTimeout(() => {
@@ -780,18 +716,16 @@ async function ejecutarSecuencia() {
 }
 
 ejecutarSecuencia();
-Flujo
-1s → Tarea A
-2s → Tarea B
-3s → Tarea C
+// 1s → Tarea A  |  2s → Tarea B  |  3s → Tarea C
+```
 
-Cada await bloquea la ejecución de la función async hasta que la Promise se resuelve.
-----
+Cada `await` bloquea la ejecución de la función `async` hasta que la Promise se resuelve.
 
-3️⃣ Ejecutar tareas en paralelo con Promise.all
+---
 
-Aquí queremos que todas las tareas empiecen al mismo tiempo.
+### 3️⃣ Ejecutar tareas en paralelo con Promise.all
 
+```javascript
 function tarea(nombre, delay) {
   return new Promise(resolve => {
     setTimeout(() => {
@@ -812,21 +746,14 @@ async function ejecutarParalelo() {
 }
 
 ejecutarParalelo();
-Qué ocurre
+// 1s → B  |  2s → C  |  3s → A
+// Resultados: ["A", "B", "C"]
+```
 
-Las tareas empiezan a la vez:
+`Promise.all` espera a que todas terminen aunque empiecen a la vez.
 
-1s → B
-2s → C
-3s → A
+---
 
-Pero Promise.all espera a que todas terminen.
+## Conclusion
 
-Resultado final:
-
-Resultados: ["A", "B", "C"]
----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-
-
-
-Conclusion: Creo que ChatGPT es una IA mas completa para el dia a dia en las personas, por la forma en la que se expresa, de que manera te devuelve las respuestas, siempre al final de cada respuesta propone ir un paso mas alla con el tema y ayudarte todo lo posible y siento que le puedes preguntar por cualquier tema cotidiano y te va a dar unas muy buenas respuestas. En cambio Claude la veo una IA mas para programadores, no es tan extensa como ChatGPT, va directa al grano y poco mas pero en tema codigo y programacion la veo mas preparada que ChatGPT.
+Creo que ChatGPT es una IA mas completa para el dia a dia en las personas, por la forma en la que se expresa, de que manera te devuelve las respuestas, siempre al final de cada respuesta propone ir un paso mas alla con el tema y ayudarte todo lo posible y siento que le puedes preguntar por cualquier tema cotidiano y te va a dar unas muy buenas respuestas. En cambio Claude la veo una IA mas para programadores, no es tan extensa como ChatGPT, va directa al grano y poco mas pero en tema codigo y programacion la veo mas preparada que ChatGPT.

@@ -52,9 +52,20 @@
   box-shadow: 0 0 0 1px rgba(91,141,239,0.18), 0 4px 24px rgba(0,0,0,0.3);
 }
 
-/* El botón de eliminar aparece al hacer hover en la card */
-.task-card:hover .btn-delete {
+/* Los botones de acción aparecen al hacer hover en la card */
+.task-card:hover .btn-delete,
+.task-card:hover .btn-edit {
   opacity: 1 !important;
+}
+
+/* Dimensiones y alineación de los botones de acción */
+.btn-edit,
+.btn-delete {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
 }
 
 /* Estado: tarea completada (añadido/retirado por JS) */

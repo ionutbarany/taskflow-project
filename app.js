@@ -30,6 +30,7 @@ themeToggle.addEventListener('click', function() {
   const esModoOscuro = html.classList.contains('dark');
   localStorage.setItem('tf-theme', esModoOscuro ? 'dark' : 'light');
   actualizarIconoTema();
+  renderizarGrafico();
 });
 
 actualizarIconoTema();
@@ -48,6 +49,7 @@ const modalPrioridad = document.getElementById('modal-prioridad');
 const modalFecha     = document.getElementById('modal-fecha');
 const modalCancel    = document.getElementById('modal-cancel');
 const modalSave      = document.getElementById('modal-save');
+const modalHeading   = document.getElementById('modal-heading');
 
 const searchInput    = document.getElementById('search-input');
 
@@ -109,6 +111,105 @@ function guardarTareas() {
   localStorage.setItem('taskflow-v2', JSON.stringify(tasks));
 }
 
+function obtenerHistorico() {
+  try {
+    const data = localStorage.getItem('taskflow-historico');
+    return data ? JSON.parse(data) : {};
+  } catch {
+    return {};
+  }
+}
+
+function registrarCompletadaHoy() {
+  const historico = obtenerHistorico();
+  const hoy = new Date().toISOString().split('T')[0];
+  historico[hoy] = (historico[hoy] || 0) + 1;
+  localStorage.setItem('taskflow-historico', JSON.stringify(historico));
+}
+
+let chartInstancia = null;
+
+function renderizarGrafico() {
+  const historico = obtenerHistorico();
+  const dias = ['Dom','Lun','Mar','Mié','Jue','Vie','Sáb'];
+  const labels = [];
+  const datos  = [];
+
+  const esModoOscuro = html.classList.contains('dark');
+  const tooltipBg     = esModoOscuro ? '#161920' : '#ffffff';
+  const tooltipBorder = esModoOscuro ? '#272c3a' : '#e5e7eb';
+  const tooltipTitle  = esModoOscuro ? '#e8eaf0' : '#111827';
+  const tooltipBody   = '#6b7280';
+  const gridColor     = esModoOscuro ? 'rgba(255,255,255,0.04)' : 'rgba(15,23,42,0.06)';
+
+  for (let i = 6; i >= 0; i--) {
+    const fecha = new Date();
+    fecha.setDate(fecha.getDate() - i);
+    const clave = fecha.toISOString().split('T')[0];
+    labels.push(dias[fecha.getDay()]);
+    datos.push(historico[clave] || 0);
+  }
+
+  const ctx = document.getElementById('chart-productividad');
+  if (!ctx) return;
+
+  if (chartInstancia) chartInstancia.destroy();
+
+  chartInstancia = new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels,
+      datasets: [{
+        data: datos,
+        backgroundColor: 'rgba(91,141,239,0.35)',
+        borderColor: '#5b8def',
+        borderWidth: 2,
+        borderRadius: 8,
+        borderSkipped: false,
+        hoverBackgroundColor: 'rgba(91,141,239,0.75)'
+      }]
+    },
+    options: {
+      responsive: true,
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          callbacks: {
+            label: ctx => ` ${ctx.parsed.y} tarea${ctx.parsed.y !== 1 ? 's' : ''}`
+          },
+          backgroundColor: tooltipBg,
+          borderColor: tooltipBorder,
+          borderWidth: 1,
+          titleColor: tooltipTitle,
+          bodyColor: tooltipBody,
+          padding: 10,
+          cornerRadius: 8
+        }
+      },
+      scales: {
+        x: {
+          ticks: {
+            color: '#6b7280',
+            font: { family: 'Syne', size: 11 }
+          },
+          grid: { display: false },
+          border: { display: false }
+        },
+        y: {
+          ticks: {
+            color: '#6b7280',
+            stepSize: 1,
+            font: { size: 10 }
+          },
+          grid: { color: gridColor },
+          border: { display: false },
+          beginAtZero: true
+        }
+      }
+    }
+  });
+}
+
 
 // ─── RENDERIZADO ───
 
@@ -131,6 +232,7 @@ function renderizarTodo() {
 
   actualizarContadores();
   aplicarBusqueda();
+  renderizarGrafico();
 }
 
 
@@ -184,8 +286,13 @@ function crearCard(tarea) {
         <span class="badge-priority ${tarea.prioridad}">${capitalizar(tarea.prioridad)}</span>
       </div>
     </div>
+    <button class="btn-edit opacity-0 shrink-0 bg-transparent border-none
+                   text-gray-400 dark:text-tf-muted text-base leading-none
+                   cursor-pointer px-2 py-0.5 rounded-lg transition-all duration-320
+                   hover:text-tf-accent hover:bg-tf-accent/10"
+            title="Editar tarea">✎</button>
     <button class="btn-delete opacity-0 shrink-0 bg-transparent border-none
-                   text-gray-400 dark:text-tf-muted text-xl leading-none
+                   text-gray-400 dark:text-tf-muted text-base leading-none
                    cursor-pointer px-2 py-0.5 rounded-lg transition-all duration-320
                    hover:text-tf-danger hover:bg-tf-danger/10"
             title="Eliminar tarea">×</button>
@@ -195,6 +302,7 @@ function crearCard(tarea) {
     if (e.target.closest('.btn-delete')) return;
     const t = tasks.find(t => t.id === tarea.id);
     t.estado = (t.estado === 'completada') ? 'pendiente' : 'completada';
+    if (t.estado === 'completada') registrarCompletadaHoy();
     guardarTareas();
     renderizarTodo();
   });
@@ -218,6 +326,12 @@ function crearCard(tarea) {
     });
   });
 
+  div.querySelector('.btn-edit').addEventListener('click', function(e) {
+    e.stopPropagation();
+    const tareaEditar = tasks.find(t => t.id === tarea.id);
+    abrirModal(tareaEditar);
+  });
+
   return div;
 }
 
@@ -225,6 +339,7 @@ function crearCard(tarea) {
 // ─── MODAL ───
 
 let estadoParaNuevaTarea = 'pendiente';
+let tareaEditandoId = null;
 
 document.querySelectorAll('.section__add').forEach(function(btn) {
   btn.addEventListener('click', function() {
@@ -234,21 +349,37 @@ document.querySelectorAll('.section__add').forEach(function(btn) {
 });
 
 /**
- * Abre el modal para añadir una nueva tarea, dejando el título vacío
- * y enfocando el campo de texto.
+ * Abre el modal en modo creación o edición según se pase una tarea.
  */
-function abrirModal() {
+function abrirModal(tareaEditar) {
+  tareaEditandoId = tareaEditar ? tareaEditar.id : null;
+
+  if (tareaEditar) {
+    modalHeading.textContent     = 'Editar tarea';
+    modalSave.textContent        = 'Editar tarea';
+    modalTitulo.value            = tareaEditar.titulo;
+    modalCategoria.value         = tareaEditar.categoria;
+    modalPrioridad.value         = tareaEditar.prioridad;
+    modalFecha.value             = tareaEditar.fechaLimite || '';
+  } else {
+    modalHeading.textContent     = 'Nueva tarea';
+    modalSave.textContent        = 'Añadir tarea';
+    modalTitulo.value            = '';
+    modalCategoria.value         = modalCategoria.options[0].value;
+    modalPrioridad.value         = modalPrioridad.options[0].value;
+    modalFecha.value             = '';
+  }
+
   modal.classList.remove('hidden');
-  modalTitulo.value = '';
-  modalFecha.value = '';
   modalTitulo.focus();
 }
 
 /**
- * Cierra el modal de creación de tarea.
+ * Cierra el modal y resetea el modo edición.
  */
 function cerrarModal() {
   modal.classList.add('hidden');
+  tareaEditandoId = null;
 }
 
 modalCancel.addEventListener('click', cerrarModal);
@@ -267,16 +398,27 @@ modalSave.addEventListener('click', function() {
     return;
   }
 
-  const nuevaTarea = {
-    id:          Date.now(),
-    titulo:      titulo,
-    categoria:   modalCategoria.value,
-    prioridad:   modalPrioridad.value,
-    estado:      estadoParaNuevaTarea,
-    fechaLimite: modalFecha.value || null
-  };
+  if (tareaEditandoId !== null) {
+    const tarea = tasks.find(t => t.id === tareaEditandoId);
+    if (tarea) {
+      tarea.titulo      = titulo;
+      tarea.categoria   = modalCategoria.value;
+      tarea.prioridad   = modalPrioridad.value;
+      tarea.fechaLimite = modalFecha.value || null;
+    }
+  } else {
+    const nuevaTarea = {
+      id:          Date.now(),
+      titulo:      titulo,
+      categoria:   modalCategoria.value,
+      prioridad:   modalPrioridad.value,
+      estado:      estadoParaNuevaTarea,
+      fechaLimite: modalFecha.value || null
+    };
 
-  tasks.push(nuevaTarea);
+    tasks.push(nuevaTarea);
+  }
+
   guardarTareas();
   cerrarModal();
   renderizarTodo();

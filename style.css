@@ -52,9 +52,20 @@
   box-shadow: 0 0 0 1px rgba(91,141,239,0.18), 0 4px 24px rgba(0,0,0,0.3);
 }
 
-/* El botón de eliminar aparece al hacer hover en la card */
-.task-card:hover .btn-delete {
+/* Los botones de acción aparecen al hacer hover en la card */
+.task-card:hover .btn-delete,
+.task-card:hover .btn-edit {
   opacity: 1 !important;
+}
+
+/* Dimensiones y alineación de los botones de acción */
+.btn-edit,
+.btn-delete {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
 }
 
 /* Estado: tarea completada (añadido/retirado por JS) */
@@ -142,4 +153,48 @@
   font-weight: 500;
   background: rgba(91,141,239,0.1);
   border-color: #272c3a;
+}
+
+.sortable-ghost {
+  opacity: 0.25;
+  border: 2px dashed #5b8def;
+  background: rgba(91,141,239,0.07) !important;
+}
+
+.sortable-chosen {
+  box-shadow: 0 0 0 2px #5b8def, 0 8px 32px rgba(91,141,239,0.35);
+  transform: scale(1.03) rotate(1deg);
+  cursor: grabbing;
+}
+
+.sortable-drag {
+  opacity: 1 !important;
+  transform: scale(1.05) rotate(1.5deg);
+}
+
+.badge-fecha {
+  font-size: 0.68rem;
+  font-weight: 600;
+  font-family: 'Syne', sans-serif;
+  padding: 2px 8px;
+  border-radius: 20px;
+  white-space: nowrap;
+}
+
+.badge-fecha.vence-hoy {
+  background: rgba(251,191,36,0.12);
+  color: #fbbf24;
+  border: 1px solid rgba(251,191,36,0.3);
+}
+
+.badge-fecha.vencida {
+  background: rgba(248,113,113,0.12);
+  color: #f87171;
+  border: 1px solid rgba(248,113,113,0.3);
+}
+
+.badge-fecha:not(.vence-hoy):not(.vencida) {
+  background: rgba(107,114,128,0.1);
+  color: #6b7280;
+  border: 1px solid rgba(107,114,128,0.2);
 }

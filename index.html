@@ -49,97 +49,98 @@
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500&family=Syne:wght@400;600;800&display=swap" rel="stylesheet" />
 </head>
 
-<body class="font-body bg-gray-50 text-gray-900 dark:bg-tf-bg dark:text-tf-text min-h-screen flex flex-col transition-colors duration-320">
+<body class="font-body bg-gray-50 text-gray-900 dark:bg-tf-bg dark:text-tf-text h-screen overflow-hidden flex flex-col transition-colors duration-320">
 
   <!-- HEADER -->
-  <header class="flex items-center justify-between
-                 px-10 py-4 gap-6
+  <header class="flex items-center
+                 px-10 py-4
                  bg-white dark:bg-tf-surface
                  border-b border-gray-200 dark:border-tf-border
                  sticky top-0 z-[100] backdrop-blur-md
                  transition-colors duration-320">
 
-    <!-- Logo -->
-    <div class="header__logo font-display text-[1.4rem] font-extrabold tracking-tight
-                text-gray-900 dark:text-tf-text flex items-center gap-2 shrink-0">
-      <div class="header__dot w-2 h-2 rounded-full bg-tf-accent shadow-[0_0_10px_#5b8def]"></div>
-      Task<span class="text-tf-accent">Flow</span>
+    <!-- Izquierda: Logo -->
+    <div class="flex-1 flex items-center">
+      <div class="header__logo font-display text-[1.4rem] font-extrabold tracking-tight
+                  text-gray-900 dark:text-tf-text flex items-center gap-2 shrink-0">
+        <div class="header__dot w-2 h-2 rounded-full bg-tf-accent shadow-[0_0_10px_#5b8def]"></div>
+        Task<span class="text-tf-accent">Flow</span>
+      </div>
     </div>
 
-    <!-- Buscador -->
-    <div class="flex-1 max-w-xs relative">
-      <span class="absolute left-3 top-1/2 -translate-y-1/2
-                   text-gray-400 dark:text-tf-muted text-lg pointer-events-none">⌕</span>
-      <input
-        type="text"
-        id="search-input"
-        placeholder="Buscar tareas..."
-        autocomplete="off"
-        class="w-full bg-gray-100 dark:bg-tf-surface2
+    <!-- Centro: Buscador -->
+    <div class="flex-1 flex justify-center">
+      <div class="w-full max-w-sm relative">
+        <span class="absolute left-3 top-1/2 -translate-y-1/2
+                     text-gray-400 dark:text-tf-muted text-lg pointer-events-none">⌕</span>
+        <input
+          type="text"
+          id="search-input"
+          placeholder="Buscar tareas..."
+          autocomplete="off"
+          class="w-full bg-gray-100 dark:bg-tf-surface2
+                 border border-gray-200 dark:border-tf-border
+                 rounded-lg py-2 pl-9 pr-3
+                 text-gray-900 dark:text-tf-text font-body text-sm
+                 placeholder:text-gray-400 dark:placeholder:text-tf-muted
+                 outline-none transition-all duration-320
+                 focus:border-tf-accent focus:ring-2 focus:ring-tf-accent/20"
+        />
+      </div>
+    </div>
+
+    <!-- Derecha: Toggle Tema -->
+    <div class="flex-1 flex justify-end">
+      <button
+        id="theme-toggle"
+        title="Cambiar tema"
+        class="shrink-0 w-9 h-9 rounded-lg flex items-center justify-center
                border border-gray-200 dark:border-tf-border
-               rounded-lg py-2 pl-9 pr-3
-               text-gray-900 dark:text-tf-text font-body text-sm
-               placeholder:text-gray-400 dark:placeholder:text-tf-muted
-               outline-none transition-all duration-320
-               focus:border-tf-accent focus:ring-2 focus:ring-tf-accent/20"
-      />
+               bg-gray-100 dark:bg-tf-surface2
+               text-gray-500 dark:text-tf-muted
+               transition-all duration-320
+               hover:border-tf-accent hover:text-tf-accent hover:bg-tf-accent/10
+               focus:outline-none focus:ring-2 focus:ring-tf-accent/30
+               cursor-pointer">
+
+        <!-- SVG LUNA (modo oscuro activo → pulsamos para ir a claro) -->
+        <svg id="icon-moon" xmlns="http://www.w3.org/2000/svg"
+             width="16" height="16" viewBox="0 0 24 24"
+             fill="none" stroke="currentColor" stroke-width="2"
+             stroke-linecap="round" stroke-linejoin="round">
+          <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+        </svg>
+
+        <!-- SVG SOL (modo claro activo → pulsamos para ir a oscuro) -->
+        <svg id="icon-sun" xmlns="http://www.w3.org/2000/svg"
+             width="16" height="16" viewBox="0 0 24 24"
+             fill="none" stroke="currentColor" stroke-width="2"
+             stroke-linecap="round" stroke-linejoin="round"
+             class="hidden">
+          <circle cx="12" cy="12" r="5"/>
+          <line x1="12" y1="1"  x2="12" y2="3"/>
+          <line x1="12" y1="21" x2="12" y2="23"/>
+          <line x1="4.22" y1="4.22"  x2="5.64" y2="5.64"/>
+          <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/>
+          <line x1="1"  y1="12" x2="3"  y2="12"/>
+          <line x1="21" y1="12" x2="23" y2="12"/>
+          <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/>
+          <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>
+        </svg>
+      </button>
     </div>
 
-    <!--
-      BOTÓN TOGGLE TEMA — usa SVG en vez de emoji para aspecto profesional.
-      El JS intercambia el SVG de luna por el de sol según el tema activo.
-    -->
-    <button
-      id="theme-toggle"
-      title="Cambiar tema"
-      class="shrink-0 w-9 h-9 rounded-lg flex items-center justify-center
-             border border-gray-200 dark:border-tf-border
-             bg-gray-100 dark:bg-tf-surface2
-             text-gray-500 dark:text-tf-muted
-             transition-all duration-320
-             hover:border-tf-accent hover:text-tf-accent hover:bg-tf-accent/10
-             focus:outline-none focus:ring-2 focus:ring-tf-accent/30
-             cursor-pointer">
-
-      <!-- SVG LUNA (modo oscuro activo → pulsamos para ir a claro) -->
-      <svg id="icon-moon" xmlns="http://www.w3.org/2000/svg"
-           width="16" height="16" viewBox="0 0 24 24"
-           fill="none" stroke="currentColor" stroke-width="2"
-           stroke-linecap="round" stroke-linejoin="round">
-        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
-      </svg>
-
-      <!-- SVG SOL (modo claro activo → pulsamos para ir a oscuro) — oculto por defecto -->
-      <svg id="icon-sun" xmlns="http://www.w3.org/2000/svg"
-           width="16" height="16" viewBox="0 0 24 24"
-           fill="none" stroke="currentColor" stroke-width="2"
-           stroke-linecap="round" stroke-linejoin="round"
-           class="hidden">
-        <circle cx="12" cy="12" r="5"/>
-        <line x1="12" y1="1"  x2="12" y2="3"/>
-        <line x1="12" y1="21" x2="12" y2="23"/>
-        <line x1="4.22" y1="4.22"  x2="5.64" y2="5.64"/>
-        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/>
-        <line x1="1"  y1="12" x2="3"  y2="12"/>
-        <line x1="21" y1="12" x2="23" y2="12"/>
-        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/>
-        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>
-      </svg>
-    </button>
-
-    <p id="header-meta" class="text-xs text-gray-400 dark:text-tf-muted font-light shrink-0">
-      Cargando...
-    </p>
   </header>
 
   <!-- LAYOUT -->
-  <div class="flex flex-1">
+  <div class="flex flex-1 min-h-0">
 
     <!-- ASIDE -->
     <aside class="w-64 shrink-0
                   bg-white dark:bg-tf-surface
                   border-r border-gray-200 dark:border-tf-border
                   p-6 flex flex-col gap-6
+                  overflow-y-auto
                   transition-colors duration-320">
 
       <!-- Vistas -->

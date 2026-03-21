@@ -136,112 +136,139 @@
   <div class="flex flex-1 min-h-0">
 
     <!-- ASIDE -->
-    <aside class="w-64 shrink-0 sticky top-16 self-start max-h-screen overflow-y-auto
-                  bg-white dark:bg-tf-surface
-                  border-r border-gray-200 dark:border-tf-border
-                  p-6 flex flex-col gap-6
-                  overflow-y-auto
-                  transition-colors duration-320">
+    <aside id="sidebar" class="shrink-0 relative">
 
-      <!-- Vistas -->
-      <div>
-        <p class="sidebar__title font-display text-[0.7rem] font-bold uppercase tracking-[0.12em]
-                  text-gray-400 dark:text-tf-muted pb-2 border-b border-gray-200 dark:border-tf-border">
-          Vistas
-        </p>
-        <nav class="flex flex-col gap-1 mt-3">
-          <div class="nav-item active flex items-center gap-2 px-4 py-2 rounded-lg text-sm text-gray-500 dark:text-tf-muted border border-transparent cursor-pointer transition-all duration-320 hover:bg-tf-accent/10 hover:text-gray-900 dark:hover:text-tf-text hover:border-gray-200 dark:hover:border-tf-border" data-filter="todas">
-            <span>⊞</span> Todas las tareas
-            <span id="count-todas" class="ml-auto text-[0.72rem] bg-gray-100 dark:bg-tf-surface2 border border-gray-200 dark:border-tf-border rounded-full px-1.5 py-0.5 text-gray-400 dark:text-tf-muted">0</span>
+      <!-- Clip wrapper: clips content to aside's current width -->
+      <div class="absolute inset-0 overflow-hidden">
+        <div id="sidebar-content"
+             class="w-64 h-full max-h-screen overflow-y-auto
+                    bg-white dark:bg-tf-surface
+                    border-r border-gray-200 dark:border-tf-border
+                    p-6 flex flex-col gap-6
+                    transition-colors duration-320">
+
+          <!-- Vistas -->
+          <div>
+            <p class="sidebar__title font-display text-[0.7rem] font-bold uppercase tracking-[0.12em]
+                      text-gray-400 dark:text-tf-muted pb-2 border-b border-gray-200 dark:border-tf-border">
+              Vistas
+            </p>
+            <nav class="flex flex-col gap-1 mt-3">
+              <div class="nav-item active flex items-center gap-2 px-4 py-2 rounded-lg text-sm text-gray-500 dark:text-tf-muted border border-transparent cursor-pointer transition-all duration-320 hover:bg-tf-accent/10 hover:text-gray-900 dark:hover:text-tf-text hover:border-gray-200 dark:hover:border-tf-border" data-filter="todas">
+                <span>⊞</span> Todas las tareas
+                <span id="count-todas" class="ml-auto text-[0.72rem] bg-gray-100 dark:bg-tf-surface2 border border-gray-200 dark:border-tf-border rounded-full px-1.5 py-0.5 text-gray-400 dark:text-tf-muted">0</span>
+              </div>
+              <div class="nav-item flex items-center gap-2 px-4 py-2 rounded-lg text-sm text-gray-500 dark:text-tf-muted border border-transparent cursor-pointer transition-all duration-320 hover:bg-tf-accent/10 hover:text-gray-900 dark:hover:text-tf-text hover:border-gray-200 dark:hover:border-tf-border" data-filter="progreso">
+                <span>◈</span> En progreso
+                <span id="count-progreso" class="ml-auto text-[0.72rem] bg-gray-100 dark:bg-tf-surface2 border border-gray-200 dark:border-tf-border rounded-full px-1.5 py-0.5 text-gray-400 dark:text-tf-muted">0</span>
+              </div>
+              <div class="nav-item flex items-center gap-2 px-4 py-2 rounded-lg text-sm text-gray-500 dark:text-tf-muted border border-transparent cursor-pointer transition-all duration-320 hover:bg-tf-accent/10 hover:text-gray-900 dark:hover:text-tf-text hover:border-gray-200 dark:hover:border-tf-border" data-filter="completada">
+                <span>✓</span> Completadas
+                <span id="count-completada" class="ml-auto text-[0.72rem] bg-gray-100 dark:bg-tf-surface2 border border-gray-200 dark:border-tf-border rounded-full px-1.5 py-0.5 text-gray-400 dark:text-tf-muted">0</span>
+              </div>
+              <div class="nav-item flex items-center gap-2 px-4 py-2 rounded-lg text-sm text-gray-500 dark:text-tf-muted border border-transparent cursor-pointer transition-all duration-320 hover:bg-tf-accent/10 hover:text-gray-900 dark:hover:text-tf-text hover:border-gray-200 dark:hover:border-tf-border" data-filter="alta">
+                <span>⚑</span> Alta prioridad
+                <span id="count-alta" class="ml-auto text-[0.72rem] bg-gray-100 dark:bg-tf-surface2 border border-gray-200 dark:border-tf-border rounded-full px-1.5 py-0.5 text-gray-400 dark:text-tf-muted">0</span>
+              </div>
+            </nav>
           </div>
-          <div class="nav-item flex items-center gap-2 px-4 py-2 rounded-lg text-sm text-gray-500 dark:text-tf-muted border border-transparent cursor-pointer transition-all duration-320 hover:bg-tf-accent/10 hover:text-gray-900 dark:hover:text-tf-text hover:border-gray-200 dark:hover:border-tf-border" data-filter="progreso">
-            <span>◈</span> En progreso
-            <span id="count-progreso" class="ml-auto text-[0.72rem] bg-gray-100 dark:bg-tf-surface2 border border-gray-200 dark:border-tf-border rounded-full px-1.5 py-0.5 text-gray-400 dark:text-tf-muted">0</span>
+
+          <!-- Categorías -->
+          <div>
+            <p class="sidebar__title font-display text-[0.7rem] font-bold uppercase tracking-[0.12em]
+                      text-gray-400 dark:text-tf-muted pb-2 border-b border-gray-200 dark:border-tf-border">
+              Categorías
+            </p>
+            <nav class="flex flex-col gap-1 mt-3">
+              <div class="nav-item flex items-center gap-2 px-4 py-2 rounded-lg text-sm text-gray-500 dark:text-tf-muted border border-transparent cursor-pointer transition-all duration-320 hover:bg-tf-accent/10 hover:text-gray-900 dark:hover:text-tf-text hover:border-gray-200 dark:hover:border-tf-border" data-filter="Desarrollo">
+                <span>💻</span> Desarrollo
+                <span id="count-Desarrollo" class="ml-auto text-[0.72rem] bg-gray-100 dark:bg-tf-surface2 border border-gray-200 dark:border-tf-border rounded-full px-1.5 py-0.5 text-gray-400 dark:text-tf-muted">0</span>
+              </div>
+              <div class="nav-item flex items-center gap-2 px-4 py-2 rounded-lg text-sm text-gray-500 dark:text-tf-muted border border-transparent cursor-pointer transition-all duration-320 hover:bg-tf-accent/10 hover:text-gray-900 dark:hover:text-tf-text hover:border-gray-200 dark:hover:border-tf-border" data-filter="Deporte">
+                <span>🏃</span> Deporte
+                <span id="count-Deporte" class="ml-auto text-[0.72rem] bg-gray-100 dark:bg-tf-surface2 border border-gray-200 dark:border-tf-border rounded-full px-1.5 py-0.5 text-gray-400 dark:text-tf-muted">0</span>
+              </div>
+              <div class="nav-item flex items-center gap-2 px-4 py-2 rounded-lg text-sm text-gray-500 dark:text-tf-muted border border-transparent cursor-pointer transition-all duration-320 hover:bg-tf-accent/10 hover:text-gray-900 dark:hover:text-tf-text hover:border-gray-200 dark:hover:border-tf-border" data-filter="Gestión">
+                <span>📋</span> Gestión
+                <span id="count-Gestión" class="ml-auto text-[0.72rem] bg-gray-100 dark:bg-tf-surface2 border border-gray-200 dark:border-tf-border rounded-full px-1.5 py-0.5 text-gray-400 dark:text-tf-muted">0</span>
+              </div>
+              <div class="nav-item flex items-center gap-2 px-4 py-2 rounded-lg text-sm text-gray-500 dark:text-tf-muted border border-transparent cursor-pointer transition-all duration-320 hover:bg-tf-accent/10 hover:text-gray-900 dark:hover:text-tf-text hover:border-gray-200 dark:hover:border-tf-border" data-filter="Investigación">
+                <span>📚</span> Investigación
+                <span id="count-Investigación" class="ml-auto text-[0.72rem] bg-gray-100 dark:bg-tf-surface2 border border-gray-200 dark:border-tf-border rounded-full px-1.5 py-0.5 text-gray-400 dark:text-tf-muted">0</span>
+              </div>
+            </nav>
           </div>
-          <div class="nav-item flex items-center gap-2 px-4 py-2 rounded-lg text-sm text-gray-500 dark:text-tf-muted border border-transparent cursor-pointer transition-all duration-320 hover:bg-tf-accent/10 hover:text-gray-900 dark:hover:text-tf-text hover:border-gray-200 dark:hover:border-tf-border" data-filter="completada">
-            <span>✓</span> Completadas
-            <span id="count-completada" class="ml-auto text-[0.72rem] bg-gray-100 dark:bg-tf-surface2 border border-gray-200 dark:border-tf-border rounded-full px-1.5 py-0.5 text-gray-400 dark:text-tf-muted">0</span>
+
+          <!-- Estadísticas -->
+          <div class="sidebar__stats flex flex-col gap-3">
+            <p class="sidebar__title font-display text-[0.7rem] font-bold uppercase tracking-[0.12em]
+                      text-gray-400 dark:text-tf-muted pb-2 border-b border-gray-200 dark:border-tf-border">
+              Progreso semanal
+            </p>
+
+            <!-- Completadas: etiqueta + valor alineados -->
+            <div class="flex items-center justify-between">
+              <span class="text-xs text-gray-400 dark:text-tf-muted">Completadas</span>
+              <span id="stat-completadas"
+                    class="font-display font-bold text-sm tabular-nums text-tf-done
+                           bg-tf-done/10 border border-tf-done/30 rounded-md px-2 py-0.5">
+                0 / 0
+              </span>
+            </div>
+
+            <!-- Barra de progreso -->
+            <div class="h-1 bg-gray-200 dark:bg-tf-border rounded-full overflow-hidden">
+              <div id="progress-fill"
+                   class="h-full rounded-full bg-gradient-to-r from-tf-accent to-tf-done transition-[width] duration-1000"
+                   style="width: 0%"></div>
+            </div>
+
+            <!-- Alta prioridad: etiqueta + valor alineados -->
+            <div class="flex items-center justify-between">
+              <span class="text-xs text-gray-400 dark:text-tf-muted">Alta prioridad</span>
+              <span id="stat-alta"
+                    class="font-display font-bold text-sm tabular-nums text-tf-danger
+                           bg-tf-danger/10 border border-tf-danger/30 rounded-md px-2 py-0.5">
+                0
+              </span>
+            </div>
+
           </div>
-          <div class="nav-item flex items-center gap-2 px-4 py-2 rounded-lg text-sm text-gray-500 dark:text-tf-muted border border-transparent cursor-pointer transition-all duration-320 hover:bg-tf-accent/10 hover:text-gray-900 dark:hover:text-tf-text hover:border-gray-200 dark:hover:border-tf-border" data-filter="alta">
-            <span>⚑</span> Alta prioridad
-            <span id="count-alta" class="ml-auto text-[0.72rem] bg-gray-100 dark:bg-tf-surface2 border border-gray-200 dark:border-tf-border rounded-full px-1.5 py-0.5 text-gray-400 dark:text-tf-muted">0</span>
-          </div>
-        </nav>
+
+          <section class="sidebar__section flex flex-col gap-3">
+            <h3 class="sidebar__label text-xs font-display font-semibold
+                       text-tf-muted uppercase tracking-wider">
+              Productividad semanal
+            </h3>
+            <div class="rounded-2xl p-4 border bg-gray-100 dark:bg-tf-surface2 border-gray-200 dark:border-tf-border">
+              <canvas id="chart-productividad" height="120"></canvas>
+            </div>
+          </section>
+
+        </div>
       </div>
 
-      <!-- Categorías -->
-      <div>
-        <p class="sidebar__title font-display text-[0.7rem] font-bold uppercase tracking-[0.12em]
-                  text-gray-400 dark:text-tf-muted pb-2 border-b border-gray-200 dark:border-tf-border">
-          Categorías
-        </p>
-        <nav class="flex flex-col gap-1 mt-3">
-          <div class="nav-item flex items-center gap-2 px-4 py-2 rounded-lg text-sm text-gray-500 dark:text-tf-muted border border-transparent cursor-pointer transition-all duration-320 hover:bg-tf-accent/10 hover:text-gray-900 dark:hover:text-tf-text hover:border-gray-200 dark:hover:border-tf-border" data-filter="Desarrollo">
-            <span>💻</span> Desarrollo
-            <span id="count-Desarrollo" class="ml-auto text-[0.72rem] bg-gray-100 dark:bg-tf-surface2 border border-gray-200 dark:border-tf-border rounded-full px-1.5 py-0.5 text-gray-400 dark:text-tf-muted">0</span>
-          </div>
-          <div class="nav-item flex items-center gap-2 px-4 py-2 rounded-lg text-sm text-gray-500 dark:text-tf-muted border border-transparent cursor-pointer transition-all duration-320 hover:bg-tf-accent/10 hover:text-gray-900 dark:hover:text-tf-text hover:border-gray-200 dark:hover:border-tf-border" data-filter="Deporte">
-            <span>🏃</span> Deporte
-            <span id="count-Deporte" class="ml-auto text-[0.72rem] bg-gray-100 dark:bg-tf-surface2 border border-gray-200 dark:border-tf-border rounded-full px-1.5 py-0.5 text-gray-400 dark:text-tf-muted">0</span>
-          </div>
-          <div class="nav-item flex items-center gap-2 px-4 py-2 rounded-lg text-sm text-gray-500 dark:text-tf-muted border border-transparent cursor-pointer transition-all duration-320 hover:bg-tf-accent/10 hover:text-gray-900 dark:hover:text-tf-text hover:border-gray-200 dark:hover:border-tf-border" data-filter="Gestión">
-            <span>📋</span> Gestión
-            <span id="count-Gestión" class="ml-auto text-[0.72rem] bg-gray-100 dark:bg-tf-surface2 border border-gray-200 dark:border-tf-border rounded-full px-1.5 py-0.5 text-gray-400 dark:text-tf-muted">0</span>
-          </div>
-          <div class="nav-item flex items-center gap-2 px-4 py-2 rounded-lg text-sm text-gray-500 dark:text-tf-muted border border-transparent cursor-pointer transition-all duration-320 hover:bg-tf-accent/10 hover:text-gray-900 dark:hover:text-tf-text hover:border-gray-200 dark:hover:border-tf-border" data-filter="Investigación">
-            <span>📚</span> Investigación
-            <span id="count-Investigación" class="ml-auto text-[0.72rem] bg-gray-100 dark:bg-tf-surface2 border border-gray-200 dark:border-tf-border rounded-full px-1.5 py-0.5 text-gray-400 dark:text-tf-muted">0</span>
-          </div>
-        </nav>
-      </div>
-
-      <!-- Estadísticas -->
-      <div class="sidebar__stats flex flex-col gap-3">
-        <p class="sidebar__title font-display text-[0.7rem] font-bold uppercase tracking-[0.12em]
-                  text-gray-400 dark:text-tf-muted pb-2 border-b border-gray-200 dark:border-tf-border">
-          Progreso semanal
-        </p>
-
-        <!-- Completadas: etiqueta + valor alineados -->
-        <div class="flex items-center justify-between">
-          <span class="text-xs text-gray-400 dark:text-tf-muted">Completadas</span>
-          <span id="stat-completadas"
-                class="font-display font-bold text-sm tabular-nums text-tf-done
-                       bg-tf-done/10 border border-tf-done/30 rounded-md px-2 py-0.5">
-            0 / 0
-          </span>
-        </div>
-
-        <!-- Barra de progreso -->
-        <div class="h-1 bg-gray-200 dark:bg-tf-border rounded-full overflow-hidden">
-          <div id="progress-fill"
-               class="h-full rounded-full bg-gradient-to-r from-tf-accent to-tf-done transition-[width] duration-1000"
-               style="width: 0%"></div>
-        </div>
-
-        <!-- Alta prioridad: etiqueta + valor alineados -->
-        <div class="flex items-center justify-between">
-          <span class="text-xs text-gray-400 dark:text-tf-muted">Alta prioridad</span>
-          <span id="stat-alta"
-                class="font-display font-bold text-sm tabular-nums text-tf-danger
-                       bg-tf-danger/10 border border-tf-danger/30 rounded-md px-2 py-0.5">
-            0
-          </span>
-        </div>
-
-      </div>
-
-      <section class="sidebar__section flex flex-col gap-3">
-        <h3 class="sidebar__label text-xs font-display font-semibold
-                   text-tf-muted uppercase tracking-wider">
-          Productividad semanal
-        </h3>
-        <div class="rounded-2xl p-4 border bg-gray-100 dark:bg-tf-surface2 border-gray-200 dark:border-tf-border">
-          <canvas id="chart-productividad" height="120"></canvas>
-        </div>
-      </section>
+      <!-- Toggle button: sits on the aside border, protrudes into body -->
+      <button id="sidebar-toggle"
+              title="Ocultar panel lateral"
+              class="sidebar-toggle-btn absolute z-50
+                     flex items-center justify-center
+                     cursor-pointer
+                     focus:outline-none">
+        <svg id="sidebar-chevron" xmlns="http://www.w3.org/2000/svg"
+             width="12" height="12" viewBox="0 0 24 24"
+             fill="none" stroke="currentColor" stroke-width="2.5"
+             stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="15 18 9 12 15 6"/>
+        </svg>
+      </button>
 
     </aside>
+    <script>
+      if(localStorage.getItem('tf-sidebar-collapsed')==='true'){
+        document.getElementById('sidebar').classList.add('collapsed');
+      }
+    </script>
 
     <!-- MAIN -->
     <main class="flex-1 p-10 overflow-y-auto flex flex-col gap-10">

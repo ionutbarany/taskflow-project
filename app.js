@@ -36,6 +36,22 @@ themeToggle.addEventListener('click', function() {
 actualizarIconoTema();
 
 
+// ─── SIDEBAR TOGGLE ──────────────────────────────────────────
+
+const sidebar       = document.getElementById('sidebar');
+const sidebarToggle = document.getElementById('sidebar-toggle');
+
+sidebarToggle.title = sidebar.classList.contains('collapsed')
+  ? 'Mostrar panel lateral'
+  : 'Ocultar panel lateral';
+
+sidebarToggle.addEventListener('click', function() {
+  const isCollapsed = sidebar.classList.toggle('collapsed');
+  sidebarToggle.title = isCollapsed ? 'Mostrar panel lateral' : 'Ocultar panel lateral';
+  localStorage.setItem('tf-sidebar-collapsed', isCollapsed);
+});
+
+
 // ─── REFERENCIAS AL DOM ───
 
 const listProgreso   = document.getElementById('list-progreso');
@@ -310,6 +326,8 @@ function crearCard(tarea) {
   div.querySelector('.btn-delete').addEventListener('click', function(e) {
     e.stopPropagation();
 
+    div.style.animation = 'none';
+
     gsap.to(div, {
       x: 120,
       opacity: 0,
@@ -318,10 +336,24 @@ function crearCard(tarea) {
       duration: 0.4,
       ease: 'power3.in',
       onComplete: function() {
-        tasks = tasks.filter(t => t.id !== tarea.id);
-        guardarTareas();
-        div.remove();
-        actualizarContadores();
+        div.style.overflow = 'hidden';
+        gsap.to(div, {
+          height: 0,
+          paddingTop: 0,
+          paddingBottom: 0,
+          marginTop: 0,
+          marginBottom: 0,
+          borderWidth: 0,
+          duration: 0.3,
+          ease: 'power2.inOut',
+          onComplete: function() {
+            tasks = tasks.filter(t => t.id !== tarea.id);
+            guardarTareas();
+            div.remove();
+            actualizarContadores();
+            renderizarGrafico();
+          }
+        });
       }
     });
   });

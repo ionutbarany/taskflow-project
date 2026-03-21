@@ -494,7 +494,6 @@ function actualizarContadores() {
   setText('label-completada', completadas + (completadas === 1 ? ' tarea' : ' tareas'));
   setText('stat-completadas', completadas + ' / ' + total);
   setText('stat-alta',        alta);
-  setText('header-meta',      pendiente   + ' pendiente' + (pendiente !== 1 ? 's' : ''));
 
   const porcentaje = total > 0 ? Math.round((completadas / total) * 100) : 0;
   const fill = document.getElementById('progress-fill');

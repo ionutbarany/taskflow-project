@@ -87,7 +87,7 @@
 
 /* Animación de entrada de cards nuevas (aplicada por JS) */
 .task-card {
-  animation: cardEntrada 0.25s ease forwards;
+  animation: cardEntrada 0.25s ease;
 }
 
 /* ── MODAL ─────────────────────────────────────────────────── */
@@ -197,4 +197,62 @@
   background: rgba(107,114,128,0.1);
   color: #6b7280;
   border: 1px solid rgba(107,114,128,0.2);
+}
+
+/* ── SIDEBAR TOGGLE ──────────────────────────────────────────── */
+
+#sidebar {
+  width: 16rem;
+  transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+#sidebar.collapsed {
+  width: 0;
+}
+
+#sidebar #sidebar-content {
+  transition: opacity 0.2s ease;
+}
+
+#sidebar.collapsed #sidebar-content {
+  opacity: 0;
+  pointer-events: none;
+}
+
+#sidebar-chevron {
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+#sidebar.collapsed #sidebar-chevron {
+  transform: rotate(180deg);
+}
+
+.sidebar-toggle-btn {
+  top: 1rem;
+  right: -1.375rem;
+  width: 1.375rem;
+  height: 2rem;
+  border-radius: 0 0.5rem 0.5rem 0;
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-left: none;
+  color: #9ca3af;
+  transition: color 0.3s, border-color 0.3s, background-color 0.3s, box-shadow 0.3s;
+}
+
+.dark .sidebar-toggle-btn {
+  background: #161920;
+  border-color: #272c3a;
+  color: #6b7280;
+}
+
+.sidebar-toggle-btn:hover {
+  color: #5b8def;
+  border-color: #5b8def;
+  background: rgba(91,141,239,0.08);
+  box-shadow: 0 0 14px rgba(91,141,239,0.25);
+}
+
+.dark .sidebar-toggle-btn:hover {
+  background: rgba(91,141,239,0.12);
 }

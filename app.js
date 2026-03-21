@@ -36,6 +36,22 @@ themeToggle.addEventListener('click', function() {
 actualizarIconoTema();
 
 
+// ─── SIDEBAR TOGGLE ──────────────────────────────────────────
+
+const sidebar       = document.getElementById('sidebar');
+const sidebarToggle = document.getElementById('sidebar-toggle');
+
+sidebarToggle.title = sidebar.classList.contains('collapsed')
+  ? 'Mostrar panel lateral'
+  : 'Ocultar panel lateral';
+
+sidebarToggle.addEventListener('click', function() {
+  const isCollapsed = sidebar.classList.toggle('collapsed');
+  sidebarToggle.title = isCollapsed ? 'Mostrar panel lateral' : 'Ocultar panel lateral';
+  localStorage.setItem('tf-sidebar-collapsed', isCollapsed);
+});
+
+
 // ─── REFERENCIAS AL DOM ───
 
 const listProgreso   = document.getElementById('list-progreso');
@@ -231,7 +247,7 @@ function renderizarTodo() {
   });
 
   actualizarContadores();
-  aplicarBusqueda();
+  aplicarFiltroVista();
   renderizarGrafico();
 }
 
@@ -310,6 +326,8 @@ function crearCard(tarea) {
   div.querySelector('.btn-delete').addEventListener('click', function(e) {
     e.stopPropagation();
 
+    div.style.animation = 'none';
+
     gsap.to(div, {
       x: 120,
       opacity: 0,
@@ -318,10 +336,24 @@ function crearCard(tarea) {
       duration: 0.4,
       ease: 'power3.in',
       onComplete: function() {
-        tasks = tasks.filter(t => t.id !== tarea.id);
-        guardarTareas();
-        div.remove();
-        actualizarContadores();
+        div.style.overflow = 'hidden';
+        gsap.to(div, {
+          height: 0,
+          paddingTop: 0,
+          paddingBottom: 0,
+          marginTop: 0,
+          marginBottom: 0,
+          borderWidth: 0,
+          duration: 0.3,
+          ease: 'power2.inOut',
+          onComplete: function() {
+            tasks = tasks.filter(t => t.id !== tarea.id);
+            guardarTareas();
+            div.remove();
+            actualizarContadores();
+            renderizarGrafico();
+          }
+        });
       }
     });
   });
@@ -482,6 +514,7 @@ function actualizarContadores() {
 
   setText('count-todas',      total);
   setText('count-progreso',   progreso);
+  setText('count-pendiente',  pendiente);
   setText('count-completada', completadas);
   setText('count-alta',       alta);
 
@@ -525,6 +558,106 @@ function capitalizar(str) {
 function formatearFecha(fechaISO) {
   const [anyo, mes, dia] = fechaISO.split('-');
   return `${dia}/${mes}/${anyo}`;
+}
+
+
+// ─── FILTRO DE VISTAS ───
+
+let filtroActivo = 'todas';
+
+const sectionProgreso   = document.getElementById('section-progreso');
+const sectionPendiente  = document.getElementById('section-pendiente');
+const sectionCompletada = document.getElementById('section-completada');
+
+const secciones = [sectionProgreso, sectionPendiente, sectionCompletada];
+
+const mapaSeccionEstado = {
+  'progreso':   sectionProgreso,
+  'pendiente':  sectionPendiente,
+  'completada': sectionCompletada
+};
+
+document.querySelectorAll('.nav-item').forEach(function(item) {
+  item.addEventListener('click', function() {
+    const filtro = item.dataset.filter;
+    if (!filtro) return;
+
+    document.querySelectorAll('.nav-item').forEach(function(n) {
+      n.classList.remove('active');
+    });
+    item.classList.add('active');
+
+    filtroActivo = filtro;
+    aplicarFiltroVista();
+  });
+});
+
+function aplicarFiltroVista() {
+  const filtrosEstado = ['progreso', 'pendiente', 'completada'];
+  const categorias = ['Desarrollo', 'Deporte', 'Gestión', 'Investigación'];
+
+  if (filtroActivo === 'todas') {
+    secciones.forEach(function(s) { s.style.display = ''; });
+    document.querySelectorAll('.task-card').forEach(function(card) {
+      card.classList.remove('hidden-by-filter');
+      card.style.display = '';
+    });
+    aplicarBusqueda();
+    return;
+  }
+
+  if (filtrosEstado.includes(filtroActivo)) {
+    secciones.forEach(function(s) {
+      const esVisible = mapaSeccionEstado[filtroActivo] === s;
+      s.style.display = esVisible ? '' : 'none';
+    });
+    document.querySelectorAll('.task-card').forEach(function(card) {
+      card.classList.remove('hidden-by-filter');
+      card.style.display = '';
+    });
+    aplicarBusqueda();
+    return;
+  }
+
+  if (filtroActivo === 'alta') {
+    secciones.forEach(function(s) { s.style.display = ''; });
+
+    document.querySelectorAll('.task-card').forEach(function(card) {
+      const id = parseInt(card.dataset.id);
+      const tarea = tasks.find(function(t) { return t.id === id; });
+      const coincide = tarea && tarea.prioridad === 'alta';
+      card.classList.toggle('hidden-by-filter', !coincide);
+      card.style.display = coincide ? '' : 'none';
+    });
+
+    secciones.forEach(function(s) {
+      const tarjetasVisibles = s.querySelectorAll('.task-card:not(.hidden-by-filter)');
+      s.style.display = tarjetasVisibles.length > 0 ? '' : 'none';
+    });
+
+    aplicarBusqueda();
+    return;
+  }
+
+  if (categorias.includes(filtroActivo)) {
+    secciones.forEach(function(s) { s.style.display = ''; });
+
+    document.querySelectorAll('.task-card').forEach(function(card) {
+      const id = parseInt(card.dataset.id);
+      const tarea = tasks.find(function(t) { return t.id === id; });
+      const coincide = tarea && tarea.categoria.includes(filtroActivo);
+      card.classList.toggle('hidden-by-filter', !coincide);
+      card.style.display = coincide ? '' : 'none';
+    });
+
+    secciones.forEach(function(s) {
+      const tarjetasVisibles = s.querySelectorAll('.task-card:not(.hidden-by-filter)');
+      s.style.display = tarjetasVisibles.length > 0 ? '' : 'none';
+    });
+
+    aplicarBusqueda();
+    return;
+  }
 }
 
 

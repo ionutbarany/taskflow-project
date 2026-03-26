@@ -277,6 +277,19 @@
     <!-- MAIN -->
     <main class="flex-1 p-10 overflow-y-auto flex flex-col gap-10">
 
+      <div id="network-loading" class="hidden flex items-center gap-3 px-4 py-3 rounded-2xl border border-gray-200 dark:border-tf-border bg-white dark:bg-tf-surface text-sm text-tf-accent">
+        <span class="inline-block w-4 h-4 border-2 border-tf-accent border-t-transparent rounded-full animate-spin shrink-0" aria-hidden="true"></span>
+        <span>Sincronizando con el servidor…</span>
+      </div>
+
+      <div id="network-error" class="hidden flex flex-wrap items-center gap-3 px-4 py-3 rounded-2xl border border-red-200 dark:border-red-900/40 bg-red-50 dark:bg-red-950/25 text-sm text-red-800 dark:text-red-200">
+        <span id="network-error-message" class="flex-1 min-w-[12rem]"></span>
+        <button type="button" id="network-retry"
+                class="shrink-0 px-3 py-1.5 rounded-lg bg-red-600 text-white text-xs font-medium hover:bg-red-500 transition-colors">
+          Reintentar
+        </button>
+      </div>
+
       <!-- EN PROGRESO -->
       <section id="section-progreso" class="flex flex-col gap-4">
         <div class="flex items-center justify-between">
@@ -402,6 +415,6 @@
   <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
-  <script src="app.js"></script>
+  <script type="module" src="src/app.js"></script>
 </body>
 </html>

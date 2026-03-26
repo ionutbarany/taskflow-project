@@ -16,7 +16,7 @@ function crearTarea(req, res) {
   res.status(201).json(tarea);
 }
 
-function eliminarTarea(req, res) {
+function eliminarTarea(req, res, next) {
   const id = Number(req.params.id);
 
   if (isNaN(id)) {
@@ -27,10 +27,7 @@ function eliminarTarea(req, res) {
     taskService.eliminarTarea(id);
     res.status(204).end();
   } catch (err) {
-    if (err.message === 'NOT_FOUND') {
-      return res.status(404).json({ error: 'Tarea no encontrada' });
-    }
-    throw err;
+    next(err);
   }
 }
 

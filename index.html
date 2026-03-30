@@ -49,201 +49,246 @@
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500&family=Syne:wght@400;600;800&display=swap" rel="stylesheet" />
 </head>
 
-<body class="font-body bg-gray-50 text-gray-900 dark:bg-tf-bg dark:text-tf-text min-h-screen flex flex-col transition-colors duration-320">
+<body class="font-body bg-gray-50 text-gray-900 dark:bg-tf-bg dark:text-tf-text h-screen overflow-hidden flex flex-col transition-colors duration-320">
 
   <!-- HEADER -->
-  <header class="flex items-center justify-between
-                 px-10 py-4 gap-6
+  <header class="flex items-center
+                 px-10 py-4
                  bg-white dark:bg-tf-surface
                  border-b border-gray-200 dark:border-tf-border
                  sticky top-0 z-[100] backdrop-blur-md
                  transition-colors duration-320">
 
-    <!-- Logo -->
-    <div class="header__logo font-display text-[1.4rem] font-extrabold tracking-tight
-                text-gray-900 dark:text-tf-text flex items-center gap-2 shrink-0">
-      <div class="header__dot w-2 h-2 rounded-full bg-tf-accent shadow-[0_0_10px_#5b8def]"></div>
-      Task<span class="text-tf-accent">Flow</span>
+    <!-- Izquierda: Logo -->
+    <div class="flex-1 flex items-center">
+      <div class="header__logo font-display text-[1.4rem] font-extrabold tracking-tight
+                  text-gray-900 dark:text-tf-text flex items-center gap-2 shrink-0">
+        <div class="header__dot w-2 h-2 rounded-full bg-tf-accent shadow-[0_0_10px_#5b8def]"></div>
+        Task<span class="text-tf-accent">Flow</span>
+      </div>
     </div>
 
-    <!-- Buscador -->
-    <div class="flex-1 max-w-xs relative">
-      <span class="absolute left-3 top-1/2 -translate-y-1/2
-                   text-gray-400 dark:text-tf-muted text-lg pointer-events-none">⌕</span>
-      <input
-        type="text"
-        id="search-input"
-        placeholder="Buscar tareas..."
-        autocomplete="off"
-        class="w-full bg-gray-100 dark:bg-tf-surface2
+    <!-- Centro: Buscador -->
+    <div class="flex-1 flex justify-center">
+      <div class="w-full max-w-sm relative">
+        <span class="absolute left-3 top-1/2 -translate-y-1/2
+                     text-gray-400 dark:text-tf-muted text-lg pointer-events-none">⌕</span>
+        <input
+          type="text"
+          id="search-input"
+          placeholder="Buscar tareas..."
+          autocomplete="off"
+          class="w-full bg-gray-100 dark:bg-tf-surface2
+                 border border-gray-200 dark:border-tf-border
+                 rounded-lg py-2 pl-9 pr-3
+                 text-gray-900 dark:text-tf-text font-body text-sm
+                 placeholder:text-gray-400 dark:placeholder:text-tf-muted
+                 outline-none transition-all duration-320
+                 focus:border-tf-accent focus:ring-2 focus:ring-tf-accent/20"
+        />
+      </div>
+    </div>
+
+    <!-- Derecha: Toggle Tema -->
+    <div class="flex-1 flex justify-end">
+      <button
+        id="theme-toggle"
+        title="Cambiar tema"
+        class="shrink-0 w-9 h-9 rounded-lg flex items-center justify-center
                border border-gray-200 dark:border-tf-border
-               rounded-lg py-2 pl-9 pr-3
-               text-gray-900 dark:text-tf-text font-body text-sm
-               placeholder:text-gray-400 dark:placeholder:text-tf-muted
-               outline-none transition-all duration-320
-               focus:border-tf-accent focus:ring-2 focus:ring-tf-accent/20"
-      />
+               bg-gray-100 dark:bg-tf-surface2
+               text-gray-500 dark:text-tf-muted
+               transition-all duration-320
+               hover:border-tf-accent hover:text-tf-accent hover:bg-tf-accent/10
+               focus:outline-none focus:ring-2 focus:ring-tf-accent/30
+               cursor-pointer">
+
+        <!-- SVG LUNA (modo oscuro activo → pulsamos para ir a claro) -->
+        <svg id="icon-moon" xmlns="http://www.w3.org/2000/svg"
+             width="16" height="16" viewBox="0 0 24 24"
+             fill="none" stroke="currentColor" stroke-width="2"
+             stroke-linecap="round" stroke-linejoin="round">
+          <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+        </svg>
+
+        <!-- SVG SOL (modo claro activo → pulsamos para ir a oscuro) -->
+        <svg id="icon-sun" xmlns="http://www.w3.org/2000/svg"
+             width="16" height="16" viewBox="0 0 24 24"
+             fill="none" stroke="currentColor" stroke-width="2"
+             stroke-linecap="round" stroke-linejoin="round"
+             class="hidden">
+          <circle cx="12" cy="12" r="5"/>
+          <line x1="12" y1="1"  x2="12" y2="3"/>
+          <line x1="12" y1="21" x2="12" y2="23"/>
+          <line x1="4.22" y1="4.22"  x2="5.64" y2="5.64"/>
+          <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/>
+          <line x1="1"  y1="12" x2="3"  y2="12"/>
+          <line x1="21" y1="12" x2="23" y2="12"/>
+          <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/>
+          <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>
+        </svg>
+      </button>
     </div>
 
-    <!--
-      BOTÓN TOGGLE TEMA — usa SVG en vez de emoji para aspecto profesional.
-      El JS intercambia el SVG de luna por el de sol según el tema activo.
-    -->
-    <button
-      id="theme-toggle"
-      title="Cambiar tema"
-      class="shrink-0 w-9 h-9 rounded-lg flex items-center justify-center
-             border border-gray-200 dark:border-tf-border
-             bg-gray-100 dark:bg-tf-surface2
-             text-gray-500 dark:text-tf-muted
-             transition-all duration-320
-             hover:border-tf-accent hover:text-tf-accent hover:bg-tf-accent/10
-             focus:outline-none focus:ring-2 focus:ring-tf-accent/30
-             cursor-pointer">
-
-      <!-- SVG LUNA (modo oscuro activo → pulsamos para ir a claro) -->
-      <svg id="icon-moon" xmlns="http://www.w3.org/2000/svg"
-           width="16" height="16" viewBox="0 0 24 24"
-           fill="none" stroke="currentColor" stroke-width="2"
-           stroke-linecap="round" stroke-linejoin="round">
-        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
-      </svg>
-
-      <!-- SVG SOL (modo claro activo → pulsamos para ir a oscuro) — oculto por defecto -->
-      <svg id="icon-sun" xmlns="http://www.w3.org/2000/svg"
-           width="16" height="16" viewBox="0 0 24 24"
-           fill="none" stroke="currentColor" stroke-width="2"
-           stroke-linecap="round" stroke-linejoin="round"
-           class="hidden">
-        <circle cx="12" cy="12" r="5"/>
-        <line x1="12" y1="1"  x2="12" y2="3"/>
-        <line x1="12" y1="21" x2="12" y2="23"/>
-        <line x1="4.22" y1="4.22"  x2="5.64" y2="5.64"/>
-        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/>
-        <line x1="1"  y1="12" x2="3"  y2="12"/>
-        <line x1="21" y1="12" x2="23" y2="12"/>
-        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/>
-        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>
-      </svg>
-    </button>
-
-    <p id="header-meta" class="text-xs text-gray-400 dark:text-tf-muted font-light shrink-0">
-      Cargando...
-    </p>
   </header>
 
   <!-- LAYOUT -->
-  <div class="flex flex-1">
+  <div class="flex flex-1 min-h-0">
 
     <!-- ASIDE -->
-    <aside class="w-64 shrink-0 sticky top-16 self-start max-h-screen overflow-y-auto
-                  bg-white dark:bg-tf-surface
-                  border-r border-gray-200 dark:border-tf-border
-                  p-6 flex flex-col gap-6
-                  transition-colors duration-320">
+    <aside id="sidebar" class="shrink-0 relative">
 
-      <!-- Vistas -->
-      <div>
-        <p class="sidebar__title font-display text-[0.7rem] font-bold uppercase tracking-[0.12em]
-                  text-gray-400 dark:text-tf-muted pb-2 border-b border-gray-200 dark:border-tf-border">
-          Vistas
-        </p>
-        <nav class="flex flex-col gap-1 mt-3">
-          <div class="nav-item active flex items-center gap-2 px-4 py-2 rounded-lg text-sm text-gray-500 dark:text-tf-muted border border-transparent cursor-pointer transition-all duration-320 hover:bg-tf-accent/10 hover:text-gray-900 dark:hover:text-tf-text hover:border-gray-200 dark:hover:border-tf-border" data-filter="todas">
-            <span>⊞</span> Todas las tareas
-            <span id="count-todas" class="ml-auto text-[0.72rem] bg-gray-100 dark:bg-tf-surface2 border border-gray-200 dark:border-tf-border rounded-full px-1.5 py-0.5 text-gray-400 dark:text-tf-muted">0</span>
+      <!-- Clip wrapper: clips content to aside's current width -->
+      <div class="absolute inset-0 overflow-hidden">
+        <div id="sidebar-content"
+             class="w-64 h-full max-h-screen overflow-y-auto
+                    bg-white dark:bg-tf-surface
+                    border-r border-gray-200 dark:border-tf-border
+                    p-6 flex flex-col gap-6
+                    transition-colors duration-320">
+
+          <!-- Vistas -->
+          <div>
+            <p class="sidebar__title font-display text-[0.7rem] font-bold uppercase tracking-[0.12em]
+                      text-gray-400 dark:text-tf-muted pb-2 border-b border-gray-200 dark:border-tf-border">
+              Vistas
+            </p>
+            <nav class="flex flex-col gap-1 mt-3">
+              <div class="nav-item active flex items-center gap-2 px-4 py-2 rounded-lg text-sm text-gray-500 dark:text-tf-muted border border-transparent cursor-pointer transition-all duration-320 hover:bg-tf-accent/10 hover:text-gray-900 dark:hover:text-tf-text hover:border-gray-200 dark:hover:border-tf-border" data-filter="todas">
+                <span>⊞</span> Todas las tareas
+                <span id="count-todas" class="ml-auto text-[0.72rem] bg-gray-100 dark:bg-tf-surface2 border border-gray-200 dark:border-tf-border rounded-full px-1.5 py-0.5 text-gray-400 dark:text-tf-muted">0</span>
+              </div>
+              <div class="nav-item flex items-center gap-2 px-4 py-2 rounded-lg text-sm text-gray-500 dark:text-tf-muted border border-transparent cursor-pointer transition-all duration-320 hover:bg-tf-accent/10 hover:text-gray-900 dark:hover:text-tf-text hover:border-gray-200 dark:hover:border-tf-border" data-filter="progreso">
+                <span>◈</span> En progreso
+                <span id="count-progreso" class="ml-auto text-[0.72rem] bg-gray-100 dark:bg-tf-surface2 border border-gray-200 dark:border-tf-border rounded-full px-1.5 py-0.5 text-gray-400 dark:text-tf-muted">0</span>
+              </div>
+              <div class="nav-item flex items-center gap-2 px-4 py-2 rounded-lg text-sm text-gray-500 dark:text-tf-muted border border-transparent cursor-pointer transition-all duration-320 hover:bg-tf-accent/10 hover:text-gray-900 dark:hover:text-tf-text hover:border-gray-200 dark:hover:border-tf-border" data-filter="pendiente">
+                <span>○</span> Pendientes
+                <span id="count-pendiente" class="ml-auto text-[0.72rem] bg-gray-100 dark:bg-tf-surface2 border border-gray-200 dark:border-tf-border rounded-full px-1.5 py-0.5 text-gray-400 dark:text-tf-muted">0</span>
+              </div>
+              <div class="nav-item flex items-center gap-2 px-4 py-2 rounded-lg text-sm text-gray-500 dark:text-tf-muted border border-transparent cursor-pointer transition-all duration-320 hover:bg-tf-accent/10 hover:text-gray-900 dark:hover:text-tf-text hover:border-gray-200 dark:hover:border-tf-border" data-filter="completada">
+                <span>✓</span> Completadas
+                <span id="count-completada" class="ml-auto text-[0.72rem] bg-gray-100 dark:bg-tf-surface2 border border-gray-200 dark:border-tf-border rounded-full px-1.5 py-0.5 text-gray-400 dark:text-tf-muted">0</span>
+              </div>
+              <div class="nav-item flex items-center gap-2 px-4 py-2 rounded-lg text-sm text-gray-500 dark:text-tf-muted border border-transparent cursor-pointer transition-all duration-320 hover:bg-tf-accent/10 hover:text-gray-900 dark:hover:text-tf-text hover:border-gray-200 dark:hover:border-tf-border" data-filter="alta">
+                <span>⚑</span> Alta prioridad
+                <span id="count-alta" class="ml-auto text-[0.72rem] bg-gray-100 dark:bg-tf-surface2 border border-gray-200 dark:border-tf-border rounded-full px-1.5 py-0.5 text-gray-400 dark:text-tf-muted">0</span>
+              </div>
+            </nav>
           </div>
-          <div class="nav-item flex items-center gap-2 px-4 py-2 rounded-lg text-sm text-gray-500 dark:text-tf-muted border border-transparent cursor-pointer transition-all duration-320 hover:bg-tf-accent/10 hover:text-gray-900 dark:hover:text-tf-text hover:border-gray-200 dark:hover:border-tf-border" data-filter="progreso">
-            <span>◈</span> En progreso
-            <span id="count-progreso" class="ml-auto text-[0.72rem] bg-gray-100 dark:bg-tf-surface2 border border-gray-200 dark:border-tf-border rounded-full px-1.5 py-0.5 text-gray-400 dark:text-tf-muted">0</span>
+
+          <!-- Categorías -->
+          <div>
+            <p class="sidebar__title font-display text-[0.7rem] font-bold uppercase tracking-[0.12em]
+                      text-gray-400 dark:text-tf-muted pb-2 border-b border-gray-200 dark:border-tf-border">
+              Categorías
+            </p>
+            <nav class="flex flex-col gap-1 mt-3">
+              <div class="nav-item flex items-center gap-2 px-4 py-2 rounded-lg text-sm text-gray-500 dark:text-tf-muted border border-transparent cursor-pointer transition-all duration-320 hover:bg-tf-accent/10 hover:text-gray-900 dark:hover:text-tf-text hover:border-gray-200 dark:hover:border-tf-border" data-filter="Desarrollo">
+                <span>💻</span> Desarrollo
+                <span id="count-Desarrollo" class="ml-auto text-[0.72rem] bg-gray-100 dark:bg-tf-surface2 border border-gray-200 dark:border-tf-border rounded-full px-1.5 py-0.5 text-gray-400 dark:text-tf-muted">0</span>
+              </div>
+              <div class="nav-item flex items-center gap-2 px-4 py-2 rounded-lg text-sm text-gray-500 dark:text-tf-muted border border-transparent cursor-pointer transition-all duration-320 hover:bg-tf-accent/10 hover:text-gray-900 dark:hover:text-tf-text hover:border-gray-200 dark:hover:border-tf-border" data-filter="Deporte">
+                <span>🏃</span> Deporte
+                <span id="count-Deporte" class="ml-auto text-[0.72rem] bg-gray-100 dark:bg-tf-surface2 border border-gray-200 dark:border-tf-border rounded-full px-1.5 py-0.5 text-gray-400 dark:text-tf-muted">0</span>
+              </div>
+              <div class="nav-item flex items-center gap-2 px-4 py-2 rounded-lg text-sm text-gray-500 dark:text-tf-muted border border-transparent cursor-pointer transition-all duration-320 hover:bg-tf-accent/10 hover:text-gray-900 dark:hover:text-tf-text hover:border-gray-200 dark:hover:border-tf-border" data-filter="Gestión">
+                <span>📋</span> Gestión
+                <span id="count-Gestión" class="ml-auto text-[0.72rem] bg-gray-100 dark:bg-tf-surface2 border border-gray-200 dark:border-tf-border rounded-full px-1.5 py-0.5 text-gray-400 dark:text-tf-muted">0</span>
+              </div>
+              <div class="nav-item flex items-center gap-2 px-4 py-2 rounded-lg text-sm text-gray-500 dark:text-tf-muted border border-transparent cursor-pointer transition-all duration-320 hover:bg-tf-accent/10 hover:text-gray-900 dark:hover:text-tf-text hover:border-gray-200 dark:hover:border-tf-border" data-filter="Investigación">
+                <span>📚</span> Investigación
+                <span id="count-Investigación" class="ml-auto text-[0.72rem] bg-gray-100 dark:bg-tf-surface2 border border-gray-200 dark:border-tf-border rounded-full px-1.5 py-0.5 text-gray-400 dark:text-tf-muted">0</span>
+              </div>
+            </nav>
           </div>
-          <div class="nav-item flex items-center gap-2 px-4 py-2 rounded-lg text-sm text-gray-500 dark:text-tf-muted border border-transparent cursor-pointer transition-all duration-320 hover:bg-tf-accent/10 hover:text-gray-900 dark:hover:text-tf-text hover:border-gray-200 dark:hover:border-tf-border" data-filter="completada">
-            <span>✓</span> Completadas
-            <span id="count-completada" class="ml-auto text-[0.72rem] bg-gray-100 dark:bg-tf-surface2 border border-gray-200 dark:border-tf-border rounded-full px-1.5 py-0.5 text-gray-400 dark:text-tf-muted">0</span>
+
+          <!-- Estadísticas -->
+          <div class="sidebar__stats flex flex-col gap-3">
+            <p class="sidebar__title font-display text-[0.7rem] font-bold uppercase tracking-[0.12em]
+                      text-gray-400 dark:text-tf-muted pb-2 border-b border-gray-200 dark:border-tf-border">
+              Progreso semanal
+            </p>
+
+            <!-- Completadas: etiqueta + valor alineados -->
+            <div class="flex items-center justify-between">
+              <span class="text-xs text-gray-400 dark:text-tf-muted">Completadas</span>
+              <span id="stat-completadas"
+                    class="font-display font-bold text-sm tabular-nums text-tf-done
+                           bg-tf-done/10 border border-tf-done/30 rounded-md px-2 py-0.5">
+                0 / 0
+              </span>
+            </div>
+
+            <!-- Barra de progreso -->
+            <div class="h-1 bg-gray-200 dark:bg-tf-border rounded-full overflow-hidden">
+              <div id="progress-fill"
+                   class="h-full rounded-full bg-gradient-to-r from-tf-accent to-tf-done transition-[width] duration-1000"
+                   style="width: 0%"></div>
+            </div>
+
+            <!-- Alta prioridad: etiqueta + valor alineados -->
+            <div class="flex items-center justify-between">
+              <span class="text-xs text-gray-400 dark:text-tf-muted">Alta prioridad</span>
+              <span id="stat-alta"
+                    class="font-display font-bold text-sm tabular-nums text-tf-danger
+                           bg-tf-danger/10 border border-tf-danger/30 rounded-md px-2 py-0.5">
+                0
+              </span>
+            </div>
+
           </div>
-          <div class="nav-item flex items-center gap-2 px-4 py-2 rounded-lg text-sm text-gray-500 dark:text-tf-muted border border-transparent cursor-pointer transition-all duration-320 hover:bg-tf-accent/10 hover:text-gray-900 dark:hover:text-tf-text hover:border-gray-200 dark:hover:border-tf-border" data-filter="alta">
-            <span>⚑</span> Alta prioridad
-            <span id="count-alta" class="ml-auto text-[0.72rem] bg-gray-100 dark:bg-tf-surface2 border border-gray-200 dark:border-tf-border rounded-full px-1.5 py-0.5 text-gray-400 dark:text-tf-muted">0</span>
-          </div>
-        </nav>
+
+          <section class="sidebar__section flex flex-col gap-3">
+            <h3 class="sidebar__label text-xs font-display font-semibold
+                       text-tf-muted uppercase tracking-wider">
+              Productividad semanal
+            </h3>
+            <div class="rounded-2xl p-4 border bg-gray-100 dark:bg-tf-surface2 border-gray-200 dark:border-tf-border">
+              <canvas id="chart-productividad" height="120"></canvas>
+            </div>
+          </section>
+
+        </div>
       </div>
 
-      <!-- Categorías -->
-      <div>
-        <p class="sidebar__title font-display text-[0.7rem] font-bold uppercase tracking-[0.12em]
-                  text-gray-400 dark:text-tf-muted pb-2 border-b border-gray-200 dark:border-tf-border">
-          Categorías
-        </p>
-        <nav class="flex flex-col gap-1 mt-3">
-          <div class="nav-item flex items-center gap-2 px-4 py-2 rounded-lg text-sm text-gray-500 dark:text-tf-muted border border-transparent cursor-pointer transition-all duration-320 hover:bg-tf-accent/10 hover:text-gray-900 dark:hover:text-tf-text hover:border-gray-200 dark:hover:border-tf-border" data-filter="Desarrollo">
-            <span>💻</span> Desarrollo
-            <span id="count-Desarrollo" class="ml-auto text-[0.72rem] bg-gray-100 dark:bg-tf-surface2 border border-gray-200 dark:border-tf-border rounded-full px-1.5 py-0.5 text-gray-400 dark:text-tf-muted">0</span>
-          </div>
-          <div class="nav-item flex items-center gap-2 px-4 py-2 rounded-lg text-sm text-gray-500 dark:text-tf-muted border border-transparent cursor-pointer transition-all duration-320 hover:bg-tf-accent/10 hover:text-gray-900 dark:hover:text-tf-text hover:border-gray-200 dark:hover:border-tf-border" data-filter="Deporte">
-            <span>🏃</span> Deporte
-            <span id="count-Deporte" class="ml-auto text-[0.72rem] bg-gray-100 dark:bg-tf-surface2 border border-gray-200 dark:border-tf-border rounded-full px-1.5 py-0.5 text-gray-400 dark:text-tf-muted">0</span>
-          </div>
-          <div class="nav-item flex items-center gap-2 px-4 py-2 rounded-lg text-sm text-gray-500 dark:text-tf-muted border border-transparent cursor-pointer transition-all duration-320 hover:bg-tf-accent/10 hover:text-gray-900 dark:hover:text-tf-text hover:border-gray-200 dark:hover:border-tf-border" data-filter="Gestión">
-            <span>📋</span> Gestión
-            <span id="count-Gestión" class="ml-auto text-[0.72rem] bg-gray-100 dark:bg-tf-surface2 border border-gray-200 dark:border-tf-border rounded-full px-1.5 py-0.5 text-gray-400 dark:text-tf-muted">0</span>
-          </div>
-          <div class="nav-item flex items-center gap-2 px-4 py-2 rounded-lg text-sm text-gray-500 dark:text-tf-muted border border-transparent cursor-pointer transition-all duration-320 hover:bg-tf-accent/10 hover:text-gray-900 dark:hover:text-tf-text hover:border-gray-200 dark:hover:border-tf-border" data-filter="Investigación">
-            <span>📚</span> Investigación
-            <span id="count-Investigación" class="ml-auto text-[0.72rem] bg-gray-100 dark:bg-tf-surface2 border border-gray-200 dark:border-tf-border rounded-full px-1.5 py-0.5 text-gray-400 dark:text-tf-muted">0</span>
-          </div>
-        </nav>
-      </div>
-
-      <!-- Estadísticas -->
-      <div class="sidebar__stats flex flex-col gap-3">
-        <p class="sidebar__title font-display text-[0.7rem] font-bold uppercase tracking-[0.12em]
-                  text-gray-400 dark:text-tf-muted pb-2 border-b border-gray-200 dark:border-tf-border">
-          Progreso semanal
-        </p>
-
-        <!-- Completadas: etiqueta + valor alineados -->
-        <div class="flex items-center justify-between">
-          <span class="text-xs text-gray-400 dark:text-tf-muted">Completadas</span>
-          <span id="stat-completadas"
-                class="font-display font-bold text-sm tabular-nums text-tf-done
-                       bg-tf-done/10 border border-tf-done/30 rounded-md px-2 py-0.5">
-            0 / 0
-          </span>
-        </div>
-
-        <!-- Barra de progreso -->
-        <div class="h-1 bg-gray-200 dark:bg-tf-border rounded-full overflow-hidden">
-          <div id="progress-fill"
-               class="h-full rounded-full bg-gradient-to-r from-tf-accent to-tf-done transition-[width] duration-1000"
-               style="width: 0%"></div>
-        </div>
-
-        <!-- Alta prioridad: etiqueta + valor alineados -->
-        <div class="flex items-center justify-between">
-          <span class="text-xs text-gray-400 dark:text-tf-muted">Alta prioridad</span>
-          <span id="stat-alta"
-                class="font-display font-bold text-sm tabular-nums text-tf-danger
-                       bg-tf-danger/10 border border-tf-danger/30 rounded-md px-2 py-0.5">
-            0
-          </span>
-        </div>
-
-      </div>
-
-      <section class="sidebar__section flex flex-col gap-3">
-        <h3 class="sidebar__label text-xs font-display font-semibold
-                   text-tf-muted uppercase tracking-wider">
-          Productividad semanal
-        </h3>
-        <div class="rounded-2xl p-4 border bg-gray-100 dark:bg-tf-surface2 border-gray-200 dark:border-tf-border">
-          <canvas id="chart-productividad" height="120"></canvas>
-        </div>
-      </section>
+      <!-- Toggle button: sits on the aside border, protrudes into body -->
+      <button id="sidebar-toggle"
+              title="Ocultar panel lateral"
+              class="sidebar-toggle-btn absolute z-50
+                     flex items-center justify-center
+                     cursor-pointer
+                     focus:outline-none">
+        <svg id="sidebar-chevron" xmlns="http://www.w3.org/2000/svg"
+             width="12" height="12" viewBox="0 0 24 24"
+             fill="none" stroke="currentColor" stroke-width="2.5"
+             stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="15 18 9 12 15 6"/>
+        </svg>
+      </button>
 
     </aside>
+    <script>
+      if(localStorage.getItem('tf-sidebar-collapsed')==='true'){
+        document.getElementById('sidebar').classList.add('collapsed');
+      }
+    </script>
 
     <!-- MAIN -->
     <main class="flex-1 p-10 overflow-y-auto flex flex-col gap-10">
+
+      <div id="network-loading" class="hidden flex items-center gap-3 px-4 py-3 rounded-2xl border border-gray-200 dark:border-tf-border bg-white dark:bg-tf-surface text-sm text-tf-accent">
+        <span class="inline-block w-4 h-4 border-2 border-tf-accent border-t-transparent rounded-full animate-spin shrink-0" aria-hidden="true"></span>
+        <span>Sincronizando con el servidor…</span>
+      </div>
+
+      <div id="network-error" class="hidden flex flex-wrap items-center gap-3 px-4 py-3 rounded-2xl border border-red-200 dark:border-red-900/40 bg-red-50 dark:bg-red-950/25 text-sm text-red-800 dark:text-red-200">
+        <span id="network-error-message" class="flex-1 min-w-[12rem]"></span>
+        <button type="button" id="network-retry"
+                class="shrink-0 px-3 py-1.5 rounded-lg bg-red-600 text-white text-xs font-medium hover:bg-red-500 transition-colors">
+          Reintentar
+        </button>
+      </div>
 
       <!-- EN PROGRESO -->
       <section id="section-progreso" class="flex flex-col gap-4">
@@ -370,6 +415,6 @@
   <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
-  <script src="app.js"></script>
+  <script type="module" src="src/app.js"></script>
 </body>
 </html>

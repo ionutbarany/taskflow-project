@@ -1,5 +1,6 @@
-//  TASKFLOW — app.js
+//  TASKFLOW — src/app.js
 
+import * as api from './api/client.js';
 
 
 // ─── DARK MODE ───────────────────────────────────────────────
@@ -36,6 +37,22 @@ themeToggle.addEventListener('click', function() {
 actualizarIconoTema();
 
 
+// ─── SIDEBAR TOGGLE ──────────────────────────────────────────
+
+const sidebar       = document.getElementById('sidebar');
+const sidebarToggle = document.getElementById('sidebar-toggle');
+
+sidebarToggle.title = sidebar.classList.contains('collapsed')
+  ? 'Mostrar panel lateral'
+  : 'Ocultar panel lateral';
+
+sidebarToggle.addEventListener('click', function() {
+  const isCollapsed = sidebar.classList.toggle('collapsed');
+  sidebarToggle.title = isCollapsed ? 'Mostrar panel lateral' : 'Ocultar panel lateral';
+  localStorage.setItem('tf-sidebar-collapsed', isCollapsed);
+});
+
+
 // ─── REFERENCIAS AL DOM ───
 
 const listProgreso   = document.getElementById('list-progreso');
@@ -54,77 +71,67 @@ const modalHeading   = document.getElementById('modal-heading');
 const searchInput    = document.getElementById('search-input');
 
 
-// ─── DATOS INICIALES ───
+// ─── ESTADO Y RED (API) ───
 
-/**
- * Conjunto de tareas iniciales utilizado como estado por defecto cuando
- * no hay datos válidos guardados en `localStorage`.
- *
- * @type {Array<{id:number, titulo:string, categoria:string, prioridad:string, estado:string}>}
- */
-const tareasIniciales = [
-  { id: 1,  titulo: 'Hacer pedido suplementos',       categoria: '📋 Gestión',       prioridad: 'alta',  estado: 'progreso'   },
-  { id: 2,  titulo: 'Proyecto sistema Log In',         categoria: '💻 Desarrollo',    prioridad: 'media', estado: 'progreso'   },
-  { id: 3,  titulo: 'Revisar código proyecto TFG',     categoria: '💻 Desarrollo',    prioridad: 'media', estado: 'progreso'   },
-  { id: 4,  titulo: 'Preparar End Points para BBDD',   categoria: '💻 Desarrollo',    prioridad: 'alta',  estado: 'progreso'   },
-  { id: 5,  titulo: 'Investigar alternativas a Redux', categoria: '📚 Investigación', prioridad: 'baja',  estado: 'progreso'   },
-  { id: 6,  titulo: 'Entrenar gimnasio',               categoria: '🏃 Deporte',       prioridad: 'alta',  estado: 'pendiente'  },
-  { id: 7,  titulo: 'Leer',                            categoria: '📚 Investigación', prioridad: 'baja',  estado: 'pendiente'  },
-  { id: 8,  titulo: 'Preparar documentación del TFG',  categoria: '📋 Gestión',       prioridad: 'media', estado: 'pendiente'  },
-  { id: 9,  titulo: 'Configurar GitHub',               categoria: '💻 Desarrollo',    prioridad: 'media', estado: 'completada' },
-  { id: 10, titulo: 'Correr',                          categoria: '🏃 Deporte',       prioridad: 'baja',  estado: 'completada' },
-  { id: 11, titulo: 'Crear App gestor de tareas',      categoria: '💻 Desarrollo',    prioridad: 'alta',  estado: 'completada' },
-  { id: 12, titulo: 'Reunión equipo TFG',              categoria: '📋 Gestión',       prioridad: 'media', estado: 'completada' },
-];
+let tasks = [];
 
-
-// ─── LOCALSTORAGE ───
-
-let tasks = cargarTareas();
-
-/**
- * Carga las tareas almacenadas en `localStorage` bajo la clave `taskflow-v2`.
- * Si no existen o el formato es inválido, devuelve `tareasIniciales`.
- *
- * @returns {Array<{id:number, titulo:string, categoria:string, prioridad:string, estado:string}>}
- * Lista de tareas que se usará como estado de la aplicación.
- */
-function cargarTareas() {
-  const guardadas = localStorage.getItem('taskflow-v2');
-  if (!guardadas) return tareasIniciales;
-
-  try {
-    const parsed = JSON.parse(guardadas);
-    // Si por algún motivo el formato no es el esperado, volvemos al estado inicial
-    return Array.isArray(parsed) ? parsed : tareasIniciales;
-  } catch {
-    console.warn('TaskFlow: datos corruptos en localStorage, se restauran tareas iniciales');
-    return tareasIniciales;
-  }
-}
-
-/**
- * Guarda el array global `tasks` en `localStorage` (clave `taskflow-v2`)
- * serializándolo en formato JSON.
- */
-function guardarTareas() {
-  localStorage.setItem('taskflow-v2', JSON.stringify(tasks));
-}
+const historicoCompletadas = {};
 
 function obtenerHistorico() {
-  try {
-    const data = localStorage.getItem('taskflow-historico');
-    return data ? JSON.parse(data) : {};
-  } catch {
-    return {};
-  }
+  return historicoCompletadas;
 }
 
 function registrarCompletadaHoy() {
-  const historico = obtenerHistorico();
   const hoy = new Date().toISOString().split('T')[0];
-  historico[hoy] = (historico[hoy] || 0) + 1;
-  localStorage.setItem('taskflow-historico', JSON.stringify(historico));
+  historicoCompletadas[hoy] = (historicoCompletadas[hoy] || 0) + 1;
+}
+
+let pendingNetworkOps = 0;
+
+function beginLoading() {
+  pendingNetworkOps++;
+  updateLoadingUi();
+}
+
+function endLoading() {
+  pendingNetworkOps = Math.max(0, pendingNetworkOps - 1);
+  updateLoadingUi();
+}
+
+function updateLoadingUi() {
+  const el = document.getElementById('network-loading');
+  if (el) el.classList.toggle('hidden', pendingNetworkOps === 0);
+}
+
+function showApiError(message) {
+  const wrap = document.getElementById('network-error');
+  const msg = document.getElementById('network-error-message');
+  if (msg) msg.textContent = message;
+  if (wrap) wrap.classList.remove('hidden');
+}
+
+function clearApiError() {
+  const wrap = document.getElementById('network-error');
+  if (wrap) wrap.classList.add('hidden');
+}
+
+async function cargarTareasInicial() {
+  beginLoading();
+  clearApiError();
+  try {
+    tasks = await api.fetchTasks();
+    renderizarTodo();
+  } catch (e) {
+    const mensaje =
+      e instanceof TypeError
+        ? 'No se pudo conectar con el servidor. Comprueba que la API esté en marcha.'
+        : e.message || 'No se pudieron cargar las tareas';
+    showApiError(mensaje);
+    tasks = [];
+    renderizarTodo();
+  } finally {
+    endLoading();
+  }
 }
 
 let chartInstancia = null;
@@ -231,7 +238,7 @@ function renderizarTodo() {
   });
 
   actualizarContadores();
-  aplicarBusqueda();
+  aplicarFiltroVista();
   renderizarGrafico();
 }
 
@@ -281,9 +288,9 @@ function crearCard(tarea) {
         </span>
       </div>
       <div class="task-card__bottom flex items-center gap-2">
-        <span class="badge-category">${tarea.categoria}</span>
+        <span class="badge-category">${tarea.categoria || '📋 Gestión'}</span>
         ${badgeFecha}
-        <span class="badge-priority ${tarea.prioridad}">${capitalizar(tarea.prioridad)}</span>
+        <span class="badge-priority ${tarea.prioridad || 'media'}">${capitalizar(tarea.prioridad || 'media')}</span>
       </div>
     </div>
     <button class="btn-edit opacity-0 shrink-0 bg-transparent border-none
@@ -298,17 +305,40 @@ function crearCard(tarea) {
             title="Eliminar tarea">×</button>
   `;
 
-  div.addEventListener('click', function(e) {
-    if (e.target.closest('.btn-delete')) return;
-    const t = tasks.find(t => t.id === tarea.id);
-    t.estado = (t.estado === 'completada') ? 'pendiente' : 'completada';
-    if (t.estado === 'completada') registrarCompletadaHoy();
-    guardarTareas();
-    renderizarTodo();
+  div.addEventListener('click', async function(e) {
+    if (e.target.closest('.btn-delete') || e.target.closest('.btn-edit')) return;
+    const t = tasks.find(x => x.id === tarea.id);
+    if (!t) return;
+    const nuevoEstado = t.estado === 'completada' ? 'pendiente' : 'completada';
+    beginLoading();
+    clearApiError();
+    try {
+      const actualizada = await api.updateTask(t.id, { estado: nuevoEstado });
+      Object.assign(t, actualizada);
+      if (actualizada.estado === 'completada') registrarCompletadaHoy();
+      renderizarTodo();
+    } catch (err) {
+      showApiError(err.message);
+    } finally {
+      endLoading();
+    }
   });
 
-  div.querySelector('.btn-delete').addEventListener('click', function(e) {
+  div.querySelector('.btn-delete').addEventListener('click', async function(e) {
     e.stopPropagation();
+
+    beginLoading();
+    clearApiError();
+    try {
+      await api.deleteTask(tarea.id);
+    } catch (err) {
+      showApiError(err.message);
+      endLoading();
+      return;
+    }
+    endLoading();
+
+    div.style.animation = 'none';
 
     gsap.to(div, {
       x: 120,
@@ -318,10 +348,23 @@ function crearCard(tarea) {
       duration: 0.4,
       ease: 'power3.in',
       onComplete: function() {
-        tasks = tasks.filter(t => t.id !== tarea.id);
-        guardarTareas();
-        div.remove();
-        actualizarContadores();
+        div.style.overflow = 'hidden';
+        gsap.to(div, {
+          height: 0,
+          paddingTop: 0,
+          paddingBottom: 0,
+          marginTop: 0,
+          marginBottom: 0,
+          borderWidth: 0,
+          duration: 0.3,
+          ease: 'power2.inOut',
+          onComplete: function() {
+            tasks = tasks.filter(t => t.id !== tarea.id);
+            div.remove();
+            actualizarContadores();
+            renderizarGrafico();
+          }
+        });
       }
     });
   });
@@ -358,8 +401,8 @@ function abrirModal(tareaEditar) {
     modalHeading.textContent     = 'Editar tarea';
     modalSave.textContent        = 'Editar tarea';
     modalTitulo.value            = tareaEditar.titulo;
-    modalCategoria.value         = tareaEditar.categoria;
-    modalPrioridad.value         = tareaEditar.prioridad;
+    modalCategoria.value         = tareaEditar.categoria || modalCategoria.options[0].value;
+    modalPrioridad.value         = tareaEditar.prioridad || 'media';
     modalFecha.value             = tareaEditar.fechaLimite || '';
   } else {
     modalHeading.textContent     = 'Nueva tarea';
@@ -388,7 +431,7 @@ modal.addEventListener('click', function(e) {
   if (e.target === modal) cerrarModal();
 });
 
-modalSave.addEventListener('click', function() {
+modalSave.addEventListener('click', async function() {
   const titulo = modalTitulo.value.trim();
   if (!titulo) {
     modalTitulo.classList.add('border-tf-danger', 'ring-2', 'ring-tf-danger/20');
@@ -398,30 +441,35 @@ modalSave.addEventListener('click', function() {
     return;
   }
 
-  if (tareaEditandoId !== null) {
-    const tarea = tasks.find(t => t.id === tareaEditandoId);
-    if (tarea) {
-      tarea.titulo      = titulo;
-      tarea.categoria   = modalCategoria.value;
-      tarea.prioridad   = modalPrioridad.value;
-      tarea.fechaLimite = modalFecha.value || null;
+  beginLoading();
+  clearApiError();
+  try {
+    if (tareaEditandoId !== null) {
+      const actualizada = await api.updateTask(tareaEditandoId, {
+        titulo,
+        categoria: modalCategoria.value,
+        prioridad: modalPrioridad.value,
+        fechaLimite: modalFecha.value || null,
+      });
+      const idx = tasks.findIndex(t => t.id === tareaEditandoId);
+      if (idx !== -1) Object.assign(tasks[idx], actualizada);
+    } else {
+      const creada = await api.createTask({
+        titulo,
+        estado: estadoParaNuevaTarea,
+        categoria: modalCategoria.value,
+        prioridad: modalPrioridad.value,
+        fechaLimite: modalFecha.value || null,
+      });
+      tasks.push(creada);
     }
-  } else {
-    const nuevaTarea = {
-      id:          Date.now(),
-      titulo:      titulo,
-      categoria:   modalCategoria.value,
-      prioridad:   modalPrioridad.value,
-      estado:      estadoParaNuevaTarea,
-      fechaLimite: modalFecha.value || null
-    };
-
-    tasks.push(nuevaTarea);
+    cerrarModal();
+    renderizarTodo();
+  } catch (err) {
+    showApiError(err.message);
+  } finally {
+    endLoading();
   }
-
-  guardarTareas();
-  cerrarModal();
-  renderizarTodo();
 });
 
 modalTitulo.addEventListener('keydown', function(e) {
@@ -482,6 +530,7 @@ function actualizarContadores() {
 
   setText('count-todas',      total);
   setText('count-progreso',   progreso);
+  setText('count-pendiente',  pendiente);
   setText('count-completada', completadas);
   setText('count-alta',       alta);
 
@@ -494,7 +543,6 @@ function actualizarContadores() {
   setText('label-completada', completadas + (completadas === 1 ? ' tarea' : ' tareas'));
   setText('stat-completadas', completadas + ' / ' + total);
   setText('stat-alta',        alta);
-  setText('header-meta',      pendiente   + ' pendiente' + (pendiente !== 1 ? 's' : ''));
 
   const porcentaje = total > 0 ? Math.round((completadas / total) * 100) : 0;
   const fill = document.getElementById('progress-fill');
@@ -529,9 +577,117 @@ function formatearFecha(fechaISO) {
 }
 
 
+// ─── FILTRO DE VISTAS ───
+
+let filtroActivo = 'todas';
+
+const sectionProgreso   = document.getElementById('section-progreso');
+const sectionPendiente  = document.getElementById('section-pendiente');
+const sectionCompletada = document.getElementById('section-completada');
+
+const secciones = [sectionProgreso, sectionPendiente, sectionCompletada];
+
+const mapaSeccionEstado = {
+  'progreso':   sectionProgreso,
+  'pendiente':  sectionPendiente,
+  'completada': sectionCompletada
+};
+
+document.querySelectorAll('.nav-item').forEach(function(item) {
+  item.addEventListener('click', function() {
+    const filtro = item.dataset.filter;
+    if (!filtro) return;
+
+    document.querySelectorAll('.nav-item').forEach(function(n) {
+      n.classList.remove('active');
+    });
+    item.classList.add('active');
+
+    filtroActivo = filtro;
+    aplicarFiltroVista();
+  });
+});
+
+function aplicarFiltroVista() {
+  const filtrosEstado = ['progreso', 'pendiente', 'completada'];
+  const categorias = ['Desarrollo', 'Deporte', 'Gestión', 'Investigación'];
+
+  if (filtroActivo === 'todas') {
+    secciones.forEach(function(s) { s.style.display = ''; });
+    document.querySelectorAll('.task-card').forEach(function(card) {
+      card.classList.remove('hidden-by-filter');
+      card.style.display = '';
+    });
+    aplicarBusqueda();
+    return;
+  }
+
+  if (filtrosEstado.includes(filtroActivo)) {
+    secciones.forEach(function(s) {
+      const esVisible = mapaSeccionEstado[filtroActivo] === s;
+      s.style.display = esVisible ? '' : 'none';
+    });
+    document.querySelectorAll('.task-card').forEach(function(card) {
+      card.classList.remove('hidden-by-filter');
+      card.style.display = '';
+    });
+    aplicarBusqueda();
+    return;
+  }
+
+  if (filtroActivo === 'alta') {
+    secciones.forEach(function(s) { s.style.display = ''; });
+
+    document.querySelectorAll('.task-card').forEach(function(card) {
+      const id = parseInt(card.dataset.id);
+      const tarea = tasks.find(function(t) { return t.id === id; });
+      const coincide = tarea && tarea.prioridad === 'alta';
+      card.classList.toggle('hidden-by-filter', !coincide);
+      card.style.display = coincide ? '' : 'none';
+    });
+
+    secciones.forEach(function(s) {
+      const tarjetasVisibles = s.querySelectorAll('.task-card:not(.hidden-by-filter)');
+      s.style.display = tarjetasVisibles.length > 0 ? '' : 'none';
+    });
+
+    aplicarBusqueda();
+    return;
+  }
+
+  if (categorias.includes(filtroActivo)) {
+    secciones.forEach(function(s) { s.style.display = ''; });
+
+    document.querySelectorAll('.task-card').forEach(function(card) {
+      const id = parseInt(card.dataset.id);
+      const tarea = tasks.find(function(t) { return t.id === id; });
+      const coincide = tarea && tarea.categoria.includes(filtroActivo);
+      card.classList.toggle('hidden-by-filter', !coincide);
+      card.style.display = coincide ? '' : 'none';
+    });
+
+    secciones.forEach(function(s) {
+      const tarjetasVisibles = s.querySelectorAll('.task-card:not(.hidden-by-filter)');
+      s.style.display = tarjetasVisibles.length > 0 ? '' : 'none';
+    });
+
+    aplicarBusqueda();
+    return;
+  }
+}
+
+
 // ─── ARRANQUE ───
 
-renderizarTodo();
+const btnNetworkRetry = document.getElementById('network-retry');
+if (btnNetworkRetry) {
+  btnNetworkRetry.addEventListener('click', function() {
+    clearApiError();
+    cargarTareasInicial();
+  });
+}
+
+cargarTareasInicial();
 
 const opcionesSortable = {
   group: 'taskflow',
@@ -539,8 +695,8 @@ const opcionesSortable = {
   ghostClass: 'sortable-ghost',
   chosenClass: 'sortable-chosen',
   dragClass: 'sortable-drag',
-  onEnd: function(evt) {
-    const idArrastrada = parseInt(evt.item.dataset.id);
+  onEnd: async function(evt) {
+    const idArrastrada = parseInt(evt.item.dataset.id, 10);
     const columnaDestino = evt.to.id;
 
     const mapaEstado = {
@@ -549,20 +705,38 @@ const opcionesSortable = {
       'list-completada': 'completada'
     };
 
+    const nuevoEstado = mapaEstado[columnaDestino];
     const tarea = tasks.find(t => t.id === idArrastrada);
-    tarea.estado = mapaEstado[columnaDestino];
+    if (!tarea) return;
 
-    // Reordenar el array tasks según el nuevo orden visual de las tres columnas
-    const idsProgreso   = [...listProgreso.querySelectorAll('.task-card')].map(c => parseInt(c.dataset.id));
-    const idsPendiente  = [...listPendiente.querySelectorAll('.task-card')].map(c => parseInt(c.dataset.id));
-    const idsCompletada = [...listCompletada.querySelectorAll('.task-card')].map(c => parseInt(c.dataset.id));
+    const idsProgreso   = [...listProgreso.querySelectorAll('.task-card')].map(c => parseInt(c.dataset.id, 10));
+    const idsPendiente  = [...listPendiente.querySelectorAll('.task-card')].map(c => parseInt(c.dataset.id, 10));
+    const idsCompletada = [...listCompletada.querySelectorAll('.task-card')].map(c => parseInt(c.dataset.id, 10));
     tasks = [
       ...idsProgreso.map(id => tasks.find(t => t.id === id)),
       ...idsPendiente.map(id => tasks.find(t => t.id === id)),
       ...idsCompletada.map(id => tasks.find(t => t.id === id))
-    ];
-    guardarTareas();
-    renderizarTodo();
+    ].filter(Boolean);
+
+    if (tarea.estado === nuevoEstado) {
+      renderizarTodo();
+      return;
+    }
+
+    beginLoading();
+    clearApiError();
+    try {
+      const actualizada = await api.updateTask(idArrastrada, { estado: nuevoEstado });
+      const t = tasks.find(x => x.id === idArrastrada);
+      if (t) Object.assign(t, actualizada);
+      if (nuevoEstado === 'completada') registrarCompletadaHoy();
+      renderizarTodo();
+    } catch (err) {
+      showApiError(err.message);
+      await cargarTareasInicial();
+    } finally {
+      endLoading();
+    }
   }
 };
 

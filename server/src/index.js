@@ -11,6 +11,15 @@ app.use(express.json());
 
 app.use('/api/v1/tasks', taskRoutes);
 
+app.use((err, req, res, next) => {
+  if (err.message === 'NOT_FOUND') {
+    return res.status(404).json({ error: 'Recurso no encontrado' });
+  }
+
+  console.error(err);
+  res.status(500).json({ error: 'Error interno del servidor' });
+});
+
 app.listen(PORT, () => {
   console.log(`Servidor TaskFlow escuchando en http://localhost:${PORT}`);
 });

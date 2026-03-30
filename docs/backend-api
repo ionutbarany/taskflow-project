@@ -1,0 +1,27 @@
+# Herramientas del ecosistema backend y API
+
+Este documento resume qué son **Axios**, **Postman**, **Sentry** y **Swagger**, y para qué se utilizan habitualmente en proyectos con APIs REST.
+
+## Axios
+
+**Axios** es una biblioteca de JavaScript muy usada para hacer peticiones HTTP desde el navegador o desde Node.js. Ofrece una API basada en promesas (`async`/`await`), interceptores de petición y respuesta, cancelación de solicitudes y serialización automática de JSON en el cuerpo de las peticiones.
+
+**Por qué se usa:** simplifica el código frente a `fetch` cuando se necesitan timeouts, transformaciones globales de cabeceras (por ejemplo añadir un token de autenticación) o manejo uniforme de errores. En TaskFlow el cliente web usa la API nativa **`fetch`** en `src/api/client.js`, pero Axios sería una alternativa equivalente y muy habitual en equipos.
+
+## Postman
+
+**Postman** es una aplicación (y ecosistema en la nube) para diseñar, enviar y documentar peticiones HTTP sin escribir código. Permite guardar colecciones de requests, variables de entorno (por ejemplo `baseUrl`), pruebas automatizadas sobre respuestas y compartir colecciones con el equipo.
+
+**Por qué se usa:** acelera las **pruebas de integración** y la depuración del backend antes de conectar el frontend. Es útil para reproducir errores (400, 404, 500) y validar contratos de la API de forma manual o semi-automatizada.
+
+## Sentry
+
+**Sentry** es una plataforma de **monitorización de errores y rendimiento** para aplicaciones en producción. Captura excepciones no controladas, agrupa incidencias similares, muestra trazas de pila y contexto (navegador, release, usuario anónimo, etc.) y puede alertar por canales (email, Slack).
+
+**Por qué se usa:** en servidores y clientes reales los fallos no siempre se reproducen en desarrollo. Sentry ayuda a detectar **regresiones** y a priorizar correcciones sin depender solo de `console.error` o de informes manuales. TaskFlow hoy registra errores internos en consola en el middleware de Express; integrar Sentry sería el siguiente paso para entornos productivos.
+
+## Swagger (OpenAPI)
+
+**Swagger** suele referirse al conjunto de herramientas alrededor de la especificación **OpenAPI**: un formato (YAML o JSON) que describe los endpoints de una API (rutas, métodos, parámetros, códigos de respuesta y esquemas de datos). A partir de ese contrato se pueden generar **documentación interactiva** (Swagger UI), clientes SDK o validaciones.
+
+**Por qué se usa:** documenta la API de forma **estándar y versionable**, reduce ambigüedades entre frontend y backend y facilita pruebas desde el navegador contra un servidor en ejecución. No está integrado en TaskFlow por defecto, pero encajaría como capa de documentación sobre las rutas Express existentes.

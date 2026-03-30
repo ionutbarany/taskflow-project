@@ -1,2 +1,4 @@
+# Dependencias locales (npm install en la raíz y en server/)
 node_modules/
+server/node_modules/
 .env
